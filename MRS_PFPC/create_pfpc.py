@@ -26,7 +26,7 @@ if __name__ == "__main__":  # pragma: no cover
     args = parser.parse_args()
 
     # get the location of the static RRSRF correction files
-    ref = importlib_resources.files("MRS_PFCP") / "refs"
+    ref = importlib_resources.files("MRS_PFPC") / "refs"
     with importlib_resources.as_file(ref) as cdata_path:
         ref_path = str(cdata_path)
 
@@ -248,7 +248,7 @@ if __name__ == "__main__":  # pragma: no cover
                     )
 
                 otab.write(
-                    f"MRS_PFPC/refs/mrs_residfringe{extstr}_chn{i+1}_{gnames[j]}.fits",
+                    f"MRS_PFPC/refs/mrs_pfpc{extstr}_chn{i+1}_{gnames[j]}.fits",
                     overwrite=True,
                 )
 
