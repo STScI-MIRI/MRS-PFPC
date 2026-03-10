@@ -13,7 +13,7 @@ from astropy.modeling import models, fitting
 
 from jwst.residual_fringe.utils import fit_residual_fringes_1d
 
-from MRSStaticRRSRF.utils.helpers import get_h_waves
+from MRS_PFPC.utils.helpers import get_h_waves
 
 
 def custest(x, axis=0):
@@ -43,7 +43,7 @@ def norm_fit(pwave, pflux):
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("starname", help="name of star = subdir name with all the data")
+    parser.add_argument("objname", help="name of object = subdir name with all the data")
     parser.add_argument(
         "--chan", help="plot only one channel", choices=["1", "2", "3", "4"]
     )
@@ -58,7 +58,7 @@ def main():
     args = parser.parse_args()
 
     # get the location of the static RRSRF correction files
-    ref = importlib_resources.files("MRSStaticRRSRF") / "refs"
+    ref = importlib_resources.files("MRS_PFPC") / "refs"
     with importlib_resources.as_file(ref) as cdata_path:
         ref_path = str(cdata_path)
 
@@ -93,7 +93,7 @@ def main():
     for hwave in hwaves:
         maskreg.append([hwave - maskwidth / 2.0, hwave + maskwidth / 2.0])
 
-    cname = args.starname
+    cname = args.objname
     # get the 1st dithers only
     if args.dithsub:
         extstr = "_dithsub"
@@ -457,13 +457,13 @@ def main():
     )
 
     ax.set_ylim(0.95, 1.05 + (5 * offval))
-    ax.set_title(args.starname)
+    ax.set_title(args.objname)
 
     # ax.legend()
 
     fig.tight_layout()
 
-    save_str = f"{args.starname}/{args.starname}_dither_divide{extstr}_chn{channame}"
+    save_str = f"{args.objname}/{args.objname}_dither_divide{extstr}_chn{channame}"
     if args.png:
         fig.savefig(f"{save_str}.png")
     elif args.pdf:

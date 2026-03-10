@@ -1,16 +1,16 @@
 MIRI MRS Point Fixed Pattern Correction (MRS-PFPC)
 ==================================================
 
-Goal is to derive static 1D fixed pattern correction vectors
-for point sources observed with the standard 4 point dither pattern.
-Use calibration observations for flux standards and asteroids to 
-derive the average fixed pattern correction for each channel and grating.
+Goal is to derive static 1D fixed pattern correction vectors for point sources
+observed with the standard 4 point dither pattern. Use calibration observations
+for flux standards and asteroids to derive the average fixed pattern correction
+for each channel and grating.
 
 In Development!
 ---------------
 
 Active development.
-Data still in changing.
+Data/code still in changing.
 Use at your own risk.
 
 Contributors
@@ -23,8 +23,58 @@ License
 This code is licensed under a 3-clause BSD style license (see the
 ``LICENSE`` file).
 
-Details
--------
+PFPC installation
+-----------------
+
+The PFPC code should be installed using pip with the following command.
+
+`pip install git+https://github.com/STScI-MIRI/MRS-PFPC.git`
+
+PFPC requires the jwst pipeline v1.20.2 or later(TBC) to also be installed. See
+https://jwst-pipeline.readthedocs.io/en/latest/ for how to install the jwst
+pipeline.
+
+PFPC Use
+--------
+
+Data for the point source should be saved in a subdirectory named after that
+source (any name will actually work). The raw data files are needed (uncal
+files) and these are downloaded from the jwst archive.
+
+Data is reduced using `pfpc_proc` that runs the `utils/pfpc_proc.py` code. This
+runs the jwst pipeline (separate installation required) with most of the
+standard steps with some changes. Specifically, in calwebb_spec2 the source
+extractions are done at each dither position for each band with recentering on
+the source. The cubes are built in the "ifualign" coordinate system to put the
+sources nominally in the same positions with the same pixel sampling. The
+residual fringe correction is not done in calwebb_spec2. The final calwebb_spec3
+is run and the source is extracted with the same settings to provide the
+pipeline comparisons for the PFPC spectra with the exception of running the
+residual fringe correction step to provide the best regular pipeline spectrum
+possible for comparison.
+
+`$ pfpc_proc object_name`
+
+The PFPC can be applied to the MRS spectra of the object by running the following
+command.
+
+`$ pfpc_cor object_name`
+
+
+Help for any of these commands can be seen with by adding `--help` when running
+the command on the command line (e.g., `$pfpc_proc --help`).
+
+PFPC Creation
+-------------
+
+Data for each flux calibration star or asteroid is saved in a subdirectory named
+after the star or asteroid. The raw data files are needed (uncal files) and
+these are downloaded from the jwst archive.  See the `create_pfpc.py` for
+the expected set of flux calibration stars and asteroids.
+
+The PFPCs for all 12 MRS bands are created using by running `create_pfpc.py`.
+
+
 
 Data reduced using `utils/proc_mrs.py`.  Details of settings are in 
 `utils/mrs_helpers.py`.  Leak correction on individual dither spectra
@@ -32,7 +82,7 @@ using `utils/leakcor_files.py`.
 
 Models downloaded from CALSPEC and stored in `models/` subdir.
 
-Average residual fringe corrections for each channel and grating
+Average fixed pattern corrections for each channel and grating
 setting created using `plotting/plot_spectra_dithers.py`.
 
 Once the static residual fringe correction is done, then data can 

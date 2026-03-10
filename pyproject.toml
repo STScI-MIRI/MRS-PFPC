@@ -6,8 +6,8 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "MRSStaticRRSRF"
-description = "MIRI MRS static residual fringe correction"
+name = "MRS-PFPC"
+description = "MIRI MRS point fixed pattern correction"
 requires-python = ">=3.10"
 readme = { file = "README.rst", content-type = "text/x-rst" }
 license = { file = "LICENSE" }
@@ -21,10 +21,10 @@ dependencies = [
 dynamic = ["version"]
 
 [project.scripts]
-mrs_proc = "MRSStaticRRSRF.utils.proc_mrs:main"
-mrs_srfcor = "MRSStaticRRSRF.plotting.plot_dithers_static_rrsrf:main"
-mrs_plot = "MRSStaticRRSRF.plotting.plot_mrs_x1d:main"
-mrs_plot_3ways = "MRSStaticRRSRF.plotting.plot_mrs_x1d_3ways:main"
+pfpc_proc = "MRS_PFPC.pfpc_proc:main"
+pfpc_cor = "MRS_PFPC.pfpc_cor:main"
+pfpc_plot = "MRS_PFPC.plotting.plot_mrs_x1d:main"
+pfpc_plot_3ways = "MRS_PFPC.plotting.plot_mrs_x1d_3ways:main"
 
 [project.optional-dependencies]
 test = [
@@ -40,7 +40,7 @@ docs = [
     "graphviz"
 ]
 [project.urls]
-repository = "https://github.com/STScI-MIRI/MRSStaticRRSRF"
+repository = "https://github.com/STScI-MIRI/MRS-PFPC"
 
 [tool.setuptools]
 zip-safe = false
@@ -50,42 +50,42 @@ include-package-data = true
 include = ["*"]
 
 [tool.setuptools.package-data]
-MRSStaticRRSRF = ["data/*"]
+MRS-PFPC = ["data/*"]
 
 [tool.setuptools_scm]
-version_file = "MRSStaticRRSRF/version.py"
+version_file = "MRS_PFPC/version.py"
 
 [tool.pytest.ini_options]
 testpaths = [
-  "MRSStaticRRSRF",
+  "MRS_PFPC",
   "docs",
 ]
 doctest_plus = "enabled"
 text_file_format = "rst"
 addopts = "--doctest-rst"
 norecursedirs = [
-  "MRSStaticRRSRF/utils",
-  "MRSStaticRRSRF[\\/]_dev",
-  "MRSStaticRRSRF/docs/_build/*",
-  "MRSStaticRRSRF/docs/api/*"
+  "MRS_PFPC/utils",
+  "MRS_PFPC[\\/]_dev",
+  "MRS_PFPC/docs/_build/*",
+  "MRS_PFPC/docs/api/*"
 ]
 
 [tool.coverage.run]
 omit = [
- "MRSStaticRRSRF/__init*",
- "MRSStaticRRSRF/conftest.py",
- "MRSStaticRRSRF/*setup_package*",
- "MRSStaticRRSRF/tests/*",
- "MRSStaticRRSRF/*/tests/*",
- "MRSStaticRRSRF/extern/*",
- "MRSStaticRRSRF/version*",
- "*/MRSStaticRRSRF/__init*",
- "*/MRSStaticRRSRF/conftest.py",
- "*/MRSStaticRRSRF/*setup_package*",
- "*/MRSStaticRRSRF/tests/*",
- "*/MRSStaticRRSRF/*/tests/*",
- "*/MRSStaticRRSRF/extern/*",
- "*/MRSStaticRRSRF/version*",
+ "MRS_PFPC/__init*",
+ "MRS_PFPC/conftest.py",
+ "MRS_PFPC/*setup_package*",
+ "MRS_PFPC/tests/*",
+ "MRS_PFPC/*/tests/*",
+ "MRS_PFPC/extern/*",
+ "MRS_PFPC/version*",
+ "*/MRS_PFPC/__init*",
+ "*/MRS_PFPC/conftest.py",
+ "*/MRS_PFPC/*setup_package*",
+ "*/MRS_PFPC/tests/*",
+ "*/MRS_PFPC/*/tests/*",
+ "*/MRS_PFPC/extern/*",
+ "*/MRS_PFPC/version*",
 ]
 
 [tool.coverage.report]

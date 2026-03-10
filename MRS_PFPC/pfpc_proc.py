@@ -11,7 +11,7 @@ from jwst.associations.lib.rules_level3_base import DMS_Level3_Base
 
 
 # get defaults for running the different pipeline stages
-from MRSStaticRRSRF.utils.mrs_helpers import (
+from MRS_PFPC.utils.mrs_helpers import (
     rundet1,
     runspec2,
     runspec3,
@@ -93,7 +93,7 @@ def writel3asn(scifiles, bgfiles, asnfile, prodname):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("starname", help="name of star")
+    parser.add_argument("objname", help="name of object = subdir name with all the data")
     parser.add_argument(
         "--dithsub", help="do the pair dither subtraction", action="store_true"
     )
@@ -103,9 +103,9 @@ def main():
     args = parser.parse_args()
 
     # name of star
-    starname = args.starname
+    objname = args.objname
 
-    main_path = f"{starname}/"
+    main_path = f"{objname}/"
 
     # Point to where you want the output science results to go
     output_dir = main_path
@@ -168,12 +168,12 @@ def main():
     if args.dithsub:
         sstring = f"{output_dir}/jw*mirifu*dithsub_cal.fits"
         calfiles = np.array(sorted(glob.glob(sstring)))
-        asnname = f"{starname}_dithsub_level3"
+        asnname = f"{objname}_dithsub_level3"
     else:
         calfiles = glob.glob(f"{main_path}/jw*mirifushort_cal.fits") + glob.glob(
             f"{main_path}/jw*mirifulong_cal.fits"
         )
-        asnname = f"{starname}_level3"
+        asnname = f"{objname}_level3"
 
     # remove the path information as this causes issues with the association file
     calfiles = [cfile.split("/")[-1] for cfile in calfiles]
@@ -192,7 +192,7 @@ def main():
         print("Skipping Spec3 processing")
 
     # do the leak correction for the individual dithers
-    cname = args.starname
+    cname = args.objname
     # get the 1st dithers only
     if args.dithsub:
         files = glob.glob(f"{cname}/*00001*_dithsub_*x1d.fits")
