@@ -1,10 +1,10 @@
-MIRI MRS point source residual fringe correction
-================================================
+MIRI MRS Point Fixed Pattern Correction (MRS-PFPC)
+==================================================
 
-Goal is to derive static 1D residual fringe correction vectors
+Goal is to derive static 1D fixed pattern correction vectors
 for point sources observed with the standard 4 point dither pattern.
 Use calibration observations for flux standards and asteroids to 
-derive the average residual fringes for each channel and grating.
+derive the average fixed pattern correction for each channel and grating.
 
 In Development!
 ---------------
