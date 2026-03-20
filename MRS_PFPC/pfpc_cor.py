@@ -57,7 +57,7 @@ def main():
     parser.add_argument("--pdf", help="save figure as a pdf file", action="store_true")
     args = parser.parse_args()
 
-    # get the location of the static RRSRF correction files
+    # get the location of the PFPC files
     ref = importlib_resources.files("MRS_PFPC") / "refs"
     with importlib_resources.as_file(ref) as cdata_path:
         ref_path = str(cdata_path)
@@ -129,7 +129,7 @@ def main():
                 showseg = False
 
         # get the residual fringe reference correction
-        rfile = f"{ref_path}/mrs_residfringe{extstr}_chn{chn}_{band}.fits"
+        rfile = f"{ref_path}/mrs_pfpc{extstr}_chn{chn}_{band}.fits"
         rtab = QTable.read(rfile)
         gvals = np.isfinite(rtab["wavelength"])
 
@@ -336,7 +336,7 @@ def main():
                 alpha=0.75,
             )
 
-        ofile = f"{cname}/{cname}{extstr}_static_rfcorr_ch{chn}-{band}_x1d.fits"
+        ofile = f"{cname}/{cname}{extstr}_pfpc_ch{chn}-{band}_x1d.fits"
         otab = QTable()
         otab["WAVELENGTH"] = refwave
         otab["FLUX"] = avespec / np.square(refwave)
@@ -355,7 +355,7 @@ def main():
         # )
 
 
-    snfile = f"{cname}/{cname}{extstr}_static_prsrfcor_sn.fits"
+    snfile = f"{cname}/{cname}{extstr}_pfpc_sn.fits"
     sntab.write(snfile, overwrite=True)
 
     ax.set_xlabel(r"$\lambda$ [$\mu$m]")

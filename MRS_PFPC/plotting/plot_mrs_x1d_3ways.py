@@ -6,7 +6,7 @@ from astropy.table import QTable
 import astropy.units as u
 from astropy.io import fits
 
-from MRSStaticRRSRF.utils.helpers import pcolors, get_h_waves
+from MRS_PFPC.utils.helpers import pcolors, get_h_waves
 
 
 def get_overlap_cor(cwave, cflux, pwave, pflux, multfac):
@@ -57,7 +57,7 @@ def main():
     sname = args.starname
     extstr = ""
 
-    filetag = f"{extstr}static_rfcorr"
+    filetag = f"{extstr}pfpc"
     fluxkey = "RF_FLUX"
     fluxkey = "FLUX"
 
@@ -79,8 +79,8 @@ def main():
 
     # fmt: on
     for k, cfile in enumerate(files):
-        cfile_dithsub = cfile.replace("_static", "_dithsub_static")
-        pipefile = cfile.replace("_static_rfcorr", "_level3")
+        cfile_dithsub = cfile.replace("_pfpc", "_dithsub_pfpc")
+        pipefile = cfile.replace("_pfpc", "_level3")
         # get details of segment so the right color can be used
         h = fits.getheader(pipefile, hdu=1)
         chn = int(h["CHANNEL"])

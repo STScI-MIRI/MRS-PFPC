@@ -6,7 +6,7 @@ from astropy.table import QTable
 import astropy.units as u
 from astropy.io import fits
 
-from MRSStaticRRSRF.utils.helpers import pcolors, rebin_constres, get_h_waves
+from MRS_PFPC.utils.helpers import pcolors, rebin_constres, get_h_waves
 
 
 def main():
@@ -49,7 +49,7 @@ def main():
     else:
         extstr = ""
 
-    filetag = f"{extstr}static_rfcorr"
+    filetag = f"{extstr}pfpc"
 
     if args.notrfcor:
         fluxkey = "FLUX"
@@ -76,7 +76,7 @@ def main():
 
     # fmt: on
     for k, cfile in enumerate(files):
-        pipefile = cfile.replace("static_rfcorr", "level3")
+        pipefile = cfile.replace("pfpc", "level3")
         # get details of segment so the right color can be used
         h = fits.getheader(pipefile, hdu=1)
         chn = int(h["CHANNEL"])
