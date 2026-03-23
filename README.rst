@@ -72,18 +72,7 @@ after the star or asteroid. The raw data files are needed (uncal files) and
 these are downloaded from the jwst archive.  See the `create_pfpc.py` for
 the expected set of flux calibration stars and asteroids.
 
+Models downloaded from CALSPEC and stored in `models/` subdir.  Models rebinned to 
+a reasonable resolution using `utils/rebin_models.py`.
+
 The PFPCs for all 12 MRS bands are created using by running `create_pfpc.py`.
-
-
-
-Data reduced using `utils/proc_mrs.py`.  Details of settings are in 
-`utils/mrs_helpers.py`.  Leak correction on individual dither spectra
-using `utils/leakcor_files.py`.
-
-Models downloaded from CALSPEC and stored in `models/` subdir.
-
-Average fixed pattern corrections for each channel and grating
-setting created using `plotting/plot_spectra_dithers.py`.
-
-Once the static residual fringe correction is done, then data can 
-corrected using `mrs_srfcor` and plotted using `mrs_plot`.

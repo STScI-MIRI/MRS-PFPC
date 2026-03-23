@@ -1,4 +1,3 @@
-import argparse
 import warnings
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,6 +9,7 @@ from MRS_PFPC.utils.helpers import rebin_constres
 
 if __name__ == "__main__":  # pragma: no cover
     mfiles = [
+        "etauma_mod_005.fits",
         "10lac_mod_006.fits",
         "hd167060_mod_006.fits",
         "hd37962_mod_009.fits",

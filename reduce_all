@@ -6,5 +6,5 @@
 # for CSTAR in HR6538 HD37962 HD167060
 for CSTAR in Henrietta_1 Henrietta_2 Polana
 do
-    nice -n 19 mrs_proc $CSTAR >& logs/$CSTAR".log" &
+    nice -n 19 pfpc_proc $CSTAR >& logs/$CSTAR".log" &
 done

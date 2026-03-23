@@ -52,7 +52,7 @@ def main():
     plt.rc("axes", linewidth=2)
     plt.rc("xtick.major", width=2)
     plt.rc("ytick.major", width=2)
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10, 6))
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(12, 8))
 
     sname = args.starname
     extstr = ""
@@ -275,7 +275,7 @@ def main():
             alpha=0.6,
         )
     ax.text(
-        4.0, lab_xvals[0], "RRSRF", fontsize=0.6 * fontsize, rotation=45.0, alpha=0.6
+        4.0, lab_xvals[0], "PFPC", fontsize=0.6 * fontsize, rotation=45.0, alpha=0.6
     )
     ax.text(
         4.0, lab_xvals[2], "Pipeline", fontsize=0.6 * fontsize, rotation=45.0, alpha=0.6

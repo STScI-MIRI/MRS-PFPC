@@ -55,7 +55,7 @@ if __name__ == "__main__":  # pragma: no cover
     hnames, hwaves = get_h_waves()
     mask_waves_a = hwaves[hwaves <= 6.5]
     mask_waves_o = np.array(
-        [6.948, 7.43, 9.713, 13.13, 17.27]
+        [6.948, 7.43, 9.713, 13.13, 17.27, 19.05, 22.34]
     )  # from David, 9-8, special, 10-9, 11-10, 12-11
 
     # only include lines above 6.5 micron
@@ -136,13 +136,18 @@ if __name__ == "__main__":  # pragma: no cover
 
                         useseg = True
                         if mfile is None:
-                            if (
-                                min(pwave.value) < 7.0
-                            ):  # set to 7 to remove all of channel 1
+                            # set to 7 to remove all of channel 1
+                            if min(pwave.value) < 7.0:  
                                 useseg = False
                         else:
-                            if max(pwave.value) > 20.0:
-                                useseg = False
+                            if cname == "etaUMa":
+                                # remove all of chanel 1 - saturation issues
+                                if min(pwave.value) < 7.0:
+                                    useseg = False
+                            else:
+                                # remove all of channel 4 - low S/N
+                                if max(pwave.value) > 20.0:
+                                    useseg = False
 
                         # do not use G stars for chan 1 short/medium, molecular lines
                         if (stype == "G") & (chn == 0) & (n <= 1):
@@ -342,7 +347,7 @@ if __name__ == "__main__":  # pragma: no cover
 
     fig.tight_layout()
 
-    save_str = f"figs/mrs_fringecor_dither_stack{extstr}"
+    save_str = f"figs/mrs_pfpc_dither_stack{extstr}"
     if args.onlyseg:
         save_str = f"{save_str}_seg{args.onlyseg}"
     else:

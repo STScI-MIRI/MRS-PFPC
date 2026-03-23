@@ -1,5 +1,4 @@
 import argparse
-import warnings
 import importlib.resources as importlib_resources
 
 import matplotlib.pyplot as plt
@@ -27,7 +26,7 @@ if __name__ == "__main__":  # pragma: no cover
     stdfunc = "mad_std"
     grow = None
 
-    # get the location of the static RRSRF correction files
+    # get the location of the PFPC correction files
     ref = importlib_resources.files("MRS_PFPC") / "refs"
     with importlib_resources.as_file(ref) as cdata_path:
         ref_path = str(cdata_path)
@@ -63,12 +62,12 @@ if __name__ == "__main__":  # pragma: no cover
             pcol = pcolors[(chn - 1) * 3 + bnum]
 
             # get the residual fringe reference correction
-            # rfile = f"{ref_path}/mrs_residfringe_chn{chn}_{band}.fits"
+            # rfile = f"{ref_path}/mrs_pfpc_chn{chn}_{band}.fits"
             # ortab = QTable.read(rfile)
             # ogvals = np.isfinite(ortab["wavelength"])
 
             # get the residual fringe reference correction
-            rfile = f"{ref_path}/mrs_residfringe{extstr}_chn{chn}_{band}.fits"
+            rfile = f"{ref_path}/mrs_pfpc{extstr}_chn{chn}_{band}.fits"
             rtab = QTable.read(rfile)
             gvals = np.isfinite(rtab["wavelength"])
             pwaves = np.ma.getdata(rtab["wavelength"][gvals].data)
