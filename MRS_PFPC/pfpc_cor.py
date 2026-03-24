@@ -47,6 +47,7 @@ def main():
     parser.add_argument(
         "--chan", help="plot only one channel", choices=["1", "2", "3", "4"]
     )
+    parser.add_argument("--onlyseg", help="show only one segment")
     parser.add_argument(
         "--dithsub", help="use the pair dither subtraction data", action="store_true"
     )
@@ -127,6 +128,12 @@ def main():
         if args.chan:
             if int(args.chan) != chn:
                 showseg = False
+
+        # segment focus
+        if args.onlyseg:
+            showseg = False
+            if args.onlyseg == f"{chn}{band}":
+                showseg = True
 
         # get the residual fringe reference correction
         rfile = f"{ref_path}/mrs_pfpc{extstr}_chn{chn}_{band}.fits"
