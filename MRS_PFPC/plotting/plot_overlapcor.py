@@ -279,12 +279,17 @@ def main():
         mflux = convolve(mflux, g)
 
         mflux *= mwave**2
-        mflux = mflux * (yrange[1] + 0.1 * (yrange[1] - yrange[0])) / np.average(mflux)
+        mflux = mflux * (yrange[1] + 0.15 * (yrange[1] - yrange[0])) / np.average(mflux)
     
         gvals = (mwave > data_xrange[0] * u.micron) & (mwave < data_xrange[1] * u.micron)
         ax.plot(mwave[gvals], mflux[gvals], "k-", alpha=0.5)
 
-    yrange[1] = yrange[1] + 0.2 * (yrange[1] - yrange[0])
+        gvals = (mwave > 5.0 * u.micron) & (mwave < 6.0 * u.micron)
+        ax.text(
+            4.0, np.nanmean(mflux[gvals]), "model", fontsize=0.6 * fontsize, rotation=45.0, alpha=0.6
+        )
+
+    yrange[1] = yrange[1] + 0.25 * (yrange[1] - yrange[0])
 
     # yrange[1] = yrange[1] + 2 * offval
     yrange[0] = yrange[0] - 0.1 * (yrange[1] - yrange[0])
@@ -298,6 +303,7 @@ def main():
             rotation=45.0,
             alpha=0.6,
         )
+
     ax.text(
         4.0, lab_xvals[0], "PFPC", fontsize=0.6 * fontsize, rotation=45.0, alpha=0.6
     )
