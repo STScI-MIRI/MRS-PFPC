@@ -255,9 +255,9 @@ def main():
         # print(chn, band, dith_ave)
 
         # make average corrected spectrum
-        specclipped = sigma_clipped_stats(
-            allspec, axis=1, sigma=2.0
-        )  # , cenfunc=custest)
+        # specclipped = sigma_clipped_stats(
+        #     allspec, axis=1, sigma=2.0
+        # )  # , cenfunc=custest)
         sigfac = 4.0
         stdfunc = "mad_std"
         grow = None

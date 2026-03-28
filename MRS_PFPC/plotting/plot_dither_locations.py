@@ -46,6 +46,21 @@ if __name__ == "__main__":  # pragma: no cover
         # "Henrietta_1", "Henrietta_2", "Polana" (***different dither pattern***)
     ]
     # names = ["10lac_many"]
+
+    names = ["HD163466_c1",
+             "HD163466_c2_e1",
+             "HD163466_c2_e2",
+             "HD163466_c2_e3",
+             "HD163466_c2_e4",
+             "HD163466_c2_e5",
+             "HD163466_c2_e6",
+             "HD163466_c2_e7",
+             "HD163466_c2_e8",
+             "HD163466_c2_e9",
+             "HD163466_c2_e10",
+             "HD163466_c2_e11",
+             ]
+
     for cname in names:
 
         for k, cdith in enumerate(["1", "2", "3", "4"]):

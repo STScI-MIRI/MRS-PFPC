@@ -50,6 +50,7 @@ if __name__ == "__main__":  # pragma: no cover
     allspec_orig = np.full((max_waves, 4, 3, 4, n_obs), np.nan)
 
     gnames = ["A", "B", "C"]
+    gnames_out = ["short", "medium", "long"]
 
     # regions to mask for hot and A stars
     hnames, hwaves = get_h_waves()
@@ -111,7 +112,25 @@ if __name__ == "__main__":  # pragma: no cover
                (4, 5.7764, 5.7793, np.nanmin),
                (4, 5.9073, 5.9090, np.nanmin),
                (4, 6.2694, 6.2706, np.nanmin)],
-        "1C": [(4, 7.2035, 7.2076, np.nanmax)], 
+        "1C": [(4, 7.0373, 7.0398, np.nanmin),
+               (4, 7.2035, 7.2076, np.nanmax),
+               (4, 7.6003, 7.6037, np.nanmin)],
+        "2A": [(1, 8.6097, 8.6134, np.nanmin),
+               (4, 7.8720, 7.8766, np.nanmax)],
+        "2B": [(1, 10.0924, 10.0949, np.nanmin)],
+        "2C": [(1, 10.4127, 10.4170, np.nanmin),
+               (1, 10.7317, 10.7367, np.nanmin),
+               (1, 10.9165, 10.9208, np.nanmin),
+               (1, 11.4827, 11.4873, np.nanmax)],
+        "3A": [(1, 12.6516, 12.6584, np.nanmax),
+               (1, 13.3873, 13.3958, np.nanmin),
+               (3, 12.6524, 12.6579, np.nanmax),
+               (4, 12.9092, 12.9132, np.nanmin)],
+        "3B": [(2, 13.8975, 13.9048, np.nanmin),
+               (3, 14.6219, 14.6283, np.nanmax)],
+        "4A": [(2, 18.8137, 18.8245, np.nanmin)],
+        "4B": [(2, 21.9841, 21.9946, np.nanmin),
+               (3, 22.0266, 22.0349, np.nanmax)]
     }
 
     if args.dithsub:
@@ -272,7 +291,6 @@ if __name__ == "__main__":  # pragma: no cover
         else:
             j = 2
         for creg in mrs_badpix[cseg]:
-            print(creg)
             dithnum, minwave, maxwave, centfunc = creg
             k = dithnum - 1
             bvals,  = np.where((allwave[:, i, j] > minwave) & (allwave[:, i, j] < maxwave))
@@ -314,7 +332,7 @@ if __name__ == "__main__":  # pragma: no cover
                     )
 
                 otab.write(
-                    f"MRS_PFPC/refs/mrs_pfpc{extstr}_chn{i+1}_{gnames[j]}.fits",
+                    f"MRS_PFPC/refs/mrs_pfpc{extstr}_chn{i+1}_{gnames_out[j]}.fits",
                     overwrite=True,
                 )
 
