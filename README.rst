@@ -101,12 +101,16 @@ Papers Figures
 
 `pfpc_cor HD163466_c1 --chan 2`
 
-4. S/N plots showing PFPC improvements for all the observations of HD 163466.  Uses
+4. Removal of spectral artifacts overview using HD 163466 coadd.
+
+`pfpc_plot HD163466_coadd --model models/hd163466_mod_005_r10000.fits`
+
+5. 5.8 micron artifact example.
+
+`python MRS_PFPC/plotting/plot_pfpc_overlap.py HD163466_coadd --paperfig`
+
+6. S/N plots showing PFPC improvements for all the observations of HD 163466.  Uses
 the S/N measurements made when the PFPC correction is applied to each observation.
 This includes the coadd of all the different epochs.
 
 `python MRS_PFPC/plotting/plot_sn_improve.py --names HD163466_c1 HD163466_c2_e1  HD163466_c2_e2 HD163466_c2_e3 HD163466_c2_e4 HD163466_c2_e5 HD163466_c2_e6 HD163466_c2_e8 HD163466_c2_e9 HD163466_c2_e10 HD163466_c2_e11 HD163466_c3_e1 HD163466_c3_e2 HD163466_c3_e3 HD163466_c3_e4 HD163466_coadd`
-
-5. Removal of spectral artifacts overview using HD 163466 coadd.
-
-`pfpc_plot HD163466_coadd --model models/hd163466_mod_005_r10000.fits`

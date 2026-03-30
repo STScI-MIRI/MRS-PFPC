@@ -30,7 +30,7 @@ if __name__ == "__main__":  # pragma: no cover
     plt.rc("ytick.minor", width=2)
 
     figsize = (12, 8)
-    fig, ax = plt.subplots(ncols=2, nrows=2, figsize=figsize, sharey=True)
+    fig, ax = plt.subplots(ncols=2, nrows=2, figsize=figsize, sharex=True)
 
     if args.names:
         names = args.names
@@ -109,8 +109,8 @@ if __name__ == "__main__":  # pragma: no cover
                     # versus pipeline S/N
                     ax[1, 0].plot(
                         # [sn1],
-                        [sn3],
-                        [sn3 / sn1],
+                        [cwave],
+                        [sn4/sn3],
                         marker=cmarker,
                         fillstyle=cfillstyle,
                         markersize=cms,
@@ -119,8 +119,8 @@ if __name__ == "__main__":  # pragma: no cover
                     )
                     ax[1, 1].plot(
                         # [sn2],
+                        [cwave],
                         [sn4],
-                        [sn4 / sn2],
                         marker=cmarker,
                         fillstyle=cfillstyle,
                         markersize=cms,
@@ -131,9 +131,11 @@ if __name__ == "__main__":  # pragma: no cover
 
     ax[0, 1].set_title("with residual fringe correction")
 
-    for i in range(2):
-        ax[i, 0].set_ylabel("(PFPC S/N)/(pipeline S/N)")
+    ax[0, 0].set_ylabel("(PFPC S/N)/(pipeline S/N)")
+    ax[1, 0].set_ylabel("(PFPC S/N w/ rfcor)/(PFPC S/N)")
+    ax[1, 1].set_ylabel("(PFPC S/N w/ rfcor)")
 
+    for i in range(2):
         ax[0, i].set_xscale("log")
         ax[0, i].xaxis.set_major_formatter(ticker.ScalarFormatter())
         ax[0, i].xaxis.set_minor_formatter(ticker.ScalarFormatter())
@@ -141,17 +143,19 @@ if __name__ == "__main__":  # pragma: no cover
             [5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 12.0, 15.0, 20.0, 25.0], minor=True
         )
         ax[0, i].tick_params(axis="x", which="minor", labelsize=fontsize * 0.8)
-        ax[0, i].set_xlabel(r"$\lambda$ [$\mu$m]")
-
-        ax[1, i].set_xlabel("PFPC S/N")
+        ax[1, i].set_xlabel(r"$\lambda$ [$\mu$m]")
 
         for k in range(int(max_ratio)):
             ax[0, i].axhline(k + 1, linestyle=":", color="k", alpha=0.5)
-            ax[1, i].axhline(k + 1, linestyle=":", color="k", alpha=0.5)
+            if i < 1:
+                ax[1, i].axhline(k + 1, linestyle=":", color="k", alpha=0.5)
 
     ax[0, 1].legend(fontsize=0.6 * fontsize, ncol=3, handlelength=0, handletextpad=2.0)
 
     ax[0, 0].set_ylim(0.0, int(max_ratio) + 1)
+    ax[0, 1].set_ylim(0.0, int(max_ratio) + 1)
+    ax[1, 0].set_ylim(0.5, 2.5)
+    ax[1, 1].set_ylim(0.0, 1300.0)
 
     fig.tight_layout()
 
