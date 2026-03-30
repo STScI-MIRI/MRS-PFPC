@@ -10,6 +10,7 @@ from astropy.table import QTable
 from astropy.units import UnitsWarning
 from astropy.stats import sigma_clipped_stats
 from astropy.modeling import models, fitting
+import astropy.units as u
 
 from jwst.residual_fringe.utils import fit_residual_fringes_1d
 
@@ -135,9 +136,10 @@ def main():
             if args.onlyseg == f"{chn}{band}":
                 showseg = True
 
-        # get the residual fringe reference correction
+        # get the point fixed pattern correction (PFPC)
         rfile = f"{ref_path}/mrs_pfpc{extstr}_chn{chn}_{band}.fits"
         rtab = QTable.read(rfile)
+        pfpc_calver = rtab.meta["CAL_VER"]
         gvals = np.isfinite(rtab["wavelength"])
 
         if args.dithsub:
@@ -151,6 +153,12 @@ def main():
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=UnitsWarning)
             ptab = QTable.read(pipefile, hdu=1)
+            pipehead = fits.getheader(pipefile)
+        # check the pipeline version between the PFPC and data
+        pipever = pipehead["CAL_VER"]
+        if pipever != pfpc_calver:
+            print(f"Data pipeline version ({pipever}) does not match PFPC pipeline version ({pfpc_calver})")
+
         pipewave = np.array(ptab["WAVELENGTH"].data)
         if args.asteroid:
             pipeflux = norm_fit(pipewave, ptab["FLUX"].data)
@@ -332,12 +340,12 @@ def main():
                 alpha=0.75,
             )
 
-            gvals = np.isfinite(avespec)
+            gvals = np.isfinite(avespec) & (avespec != 0.0)
             rfringecor = sdefringe[gvals] / avespec[gvals]
 
             ax.plot(
                 refwave[gvals],
-                rfringecor[gvals] / np.nanmedian(rfringecor[gvals]) + (4.25 * offval),
+                rfringecor / np.nanmedian(rfringecor) + (4.25 * offval),
                 linestyle="-",
                 color="orange",
                 alpha=0.75,
@@ -345,11 +353,19 @@ def main():
 
         ofile = f"{cname}/{cname}{extstr}_pfpc_ch{chn}-{band}_x1d.fits"
         otab = QTable()
-        otab["WAVELENGTH"] = refwave
-        otab["FLUX"] = avespec / np.square(refwave)
-        otab["FLUX_ERROR"] = specclipped[2] / np.square(refwave)
-        otab["RF_FLUX"] = sdefringe / np.square(refwave)
+        otab["WAVELENGTH"] = refwave * u.micron
+        otab["FLUX"] = (avespec / np.square(refwave)) * u.Jy
+        otab["FLUX_ERROR"] = (specclipped[2] / np.square(refwave)) * u.Jy
+        otab["RF_FLUX"] = (sdefringe / np.square(refwave)) * u.Jy
         otab.write(ofile, overwrite=True)
+        h["PFPC_COR"] = ("Yes", "Corrected with MRS-PFPC")
+        h["MRS-PFPC"] = "MRS Point Fixed Pattern Correction"
+        h["REPO"] = "https://github.com/STScI-MIRI/MRS-PFPC"
+        h["REF"] = "Gordon et al. (2026, in prep)"
+        hdu1 = fits.PrimaryHDU(header=h)
+        hdu2 = fits.BinTableHDU(otab)
+        hdulist = fits.HDUList([hdu1, hdu2])
+        hdulist.writeto(ofile, overwrite=True)
 
         # make average pipline rf corrected spectrum
         # specrfclipped = sigma_clipped_stats(allspecrf, axis=1, sigma=2.0)

@@ -5,10 +5,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import astropy.units as u
 from astropy.table import QTable
+from astropy.io import fits
 from astropy.units import UnitsWarning
 from astropy.convolution import Gaussian1DKernel, convolve
 from astropy.modeling import models, fitting
-from astropy.stats import sigma_clipped_stats, sigma_clip
+from astropy.stats import sigma_clip
 import astropy.units as u
 
 from MRS_PFPC.utils.helpers import sinfo, get_h_waves
@@ -153,6 +154,7 @@ if __name__ == "__main__":  # pragma: no cover
             mflux = mtab["flux"]
             mflux *= mwave**2
 
+        calver = None
         for n, dname in enumerate(cfiles):
             for csub in ["short", "long"]:
 
@@ -173,6 +175,13 @@ if __name__ == "__main__":  # pragma: no cover
                         with warnings.catch_warnings():
                             warnings.simplefilter("ignore", category=UnitsWarning)
                             atab = QTable.read(f"{cname}/{cfile}", hdu=1)
+
+                            h = fits.getheader(f"{cname}/{cfile}")
+                            curcalver = h["CAL_VER"]
+                            if calver is None:
+                                calver = curcalver
+                            if curcalver != calver:
+                                print("files have different calibration versions")
 
                         pcol = "b"
                         pwave = atab["WAVELENGTH"]
@@ -331,6 +340,10 @@ if __name__ == "__main__":  # pragma: no cover
                         alpha=0.7,
                     )
 
+                otab.meta["CAL_VER"] = calver
+                otab.meta["MRS-PFPC"] = "MRS Point Fixed Pattern Correction"
+                otab.meta["REPO"] = "https://github.com/STScI-MIRI/MRS-PFPC"
+                otab.meta["REF"] = "Gordon et al. (2026, in prep)"
                 otab.write(
                     f"MRS_PFPC/refs/mrs_pfpc{extstr}_chn{i+1}_{gnames_out[j]}.fits",
                     overwrite=True,

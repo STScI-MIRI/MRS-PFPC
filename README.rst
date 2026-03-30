@@ -88,7 +88,14 @@ Papers Figures
 
 1. PFPC creation examples for 4 segments.
 
-2. PFPCs w/o and w/ residualf ringe correction for each channel.
+`python MRS_PFPC/create_pfpc.py --onlyseg 1B`
+`python MRS_PFPC/create_pfpc.py --onlyseg 2C`
+`python MRS_PFPC/create_pfpc.py --onlyseg 3A`
+`python MRS_PFPC/create_pfpc.py --onlyseg 4B`
+
+2. PFPCs w/o and w/ residual fringe correction for each channel.
+
+`source plot_all_pfpc`
 
 3. Example of applying the PFPC to a star.
 

@@ -246,7 +246,7 @@ def main():
             alpha=0.8,
         )
 
-        # plot pipeline RF correction for tge pipeline reductions
+        # plot pipeline RF correction for the pipeline reductions
         ax.plot(
             pcwave,
             (tpipeflux / tpipefluxrf) * aveval * 0.75,
@@ -263,6 +263,18 @@ def main():
 
         if chn < 4:
             yrange = ax.get_ylim()
+
+        # output the segement with the overlap region correction
+        ofile = cfile.replace("pfpc", "pfpc_ocor")
+        otab = QTable()
+        otab["WAVELENGTH"] = itab["WAVELENGTH"]
+        otab["FLUX"] = itab["FLUX"] * multfac
+        otab["FLUX_ERROR"] = itab["FLUX_ERROR"] * multfac
+        otab["RF_FLUX"] = itab["RF_FLUX"] * multfacrf
+        hdu1 = fits.PrimaryHDU(header=h)
+        hdu2 = fits.BinTableHDU(otab)
+        hdulist = fits.HDUList([hdu1, hdu2])
+        hdulist.writeto(ofile, overwrite=True)
 
     yrange = np.array(yrange)
 
@@ -342,7 +354,7 @@ def main():
 
     plt.tight_layout()
 
-    fname = f"figs/{sname}_overlapcor"
+    fname = f"figs/{sname}_pfpc"
     if args.png:
         fig.savefig(f"{fname}.png")
     elif args.pdf:

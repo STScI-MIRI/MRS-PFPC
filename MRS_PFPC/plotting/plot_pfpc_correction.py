@@ -11,17 +11,7 @@ from jwst.residual_fringe.utils import fit_residual_fringes_1d
 from MRS_PFPC.utils.helpers import pcolors
 
 
-if __name__ == "__main__":  # pragma: no cover
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--chan", help="plot only one channel", choices=[1, 2, 3, 4], type=int
-    )
-    parser.add_argument("--rfcor", help="apply residual fringe correction", action="store_true")
-    parser.add_argument("--dithsub", help="use dithsub pairs", action="store_true")
-    parser.add_argument("--png", help="save figure as a png file", action="store_true")
-    parser.add_argument("--pdf", help="save figure as a pdf file", action="store_true")
-    args = parser.parse_args()
-
+def plot_pfpc(ax, chan, rfcor, dithsub, fontsize):
     sigfac = 4.0
     stdfunc = "mad_std"
     grow = None
@@ -31,28 +21,13 @@ if __name__ == "__main__":  # pragma: no cover
     with importlib_resources.as_file(ref) as cdata_path:
         ref_path = str(cdata_path)
 
-    fontsize = 20
-
-    font = {"size": fontsize}
-
-    plt.rc("font", **font)
-
-    plt.rc("lines", linewidth=1)
-    plt.rc("axes", linewidth=2)
-    plt.rc("xtick.major", width=2)
-    plt.rc("xtick.minor", width=2)
-    plt.rc("ytick.major", width=2)
-    plt.rc("ytick.minor", width=2)
-
-    fig, ax = plt.subplots(1, 1, figsize=(10, 6))
-
-    if args.dithsub:
+    if dithsub:
         extstr = "_dithsub"
     else:
         extstr = ""
-    offval = 0.07
-    if args.chan:
-        channels = [args.chan]
+    offval = 0.1
+    if chan:
+        channels = [chan]
     else:
         channels = [1, 2, 3, 4]
 
@@ -78,7 +53,7 @@ if __name__ == "__main__":  # pragma: no cover
 
                 pflux = np.ma.getdata(rtab[f"dither{cdith}"][gvals].data)
 
-                if args.rfcor:
+                if rfcor:
                     pfluxrf = fit_residual_fringes_1d(pflux, pwaves, channel=chn)
                     pflux = pfluxrf
 
@@ -116,7 +91,7 @@ if __name__ == "__main__":  # pragma: no cover
 
             ax.text(
                 np.max(pwaves),
-                1.0 + (4.5 - 0.5) * offval,
+                1.0 + (4.5 - 0.75) * offval,
                 f"Limit S/N = {snval:.1f}",
                 fontsize=0.6 * fontsize,
                 alpha=0.7,
@@ -125,22 +100,22 @@ if __name__ == "__main__":  # pragma: no cover
             )
 
     ax.set_xlabel(r"$\lambda$ [$\mu$m]")
-    ax.set_ylabel("PRSRF")
+    ax.set_ylabel("PFPC")
 
     ktitle = ""
-    if args.chan:
-        if args.chan == 1:
+    if chan:
+        if chan == 1:
             xrange = [4.8, 7.8]
-        elif args.chan == 2:
+        elif chan == 2:
             xrange = [7.25, 12.0]
-        elif args.chan == 3:
+        elif chan == 3:
             xrange = [11.5, 18.0]
         else:
             xrange = [17.5, 29.0]
         # ax.set_xlim(xrange)
-        ktitle = f"Channel {args.chan}"
-    if args.rfcor:
-        ktitle = f"{ktitle}; residual fringe correction"
+        ktitle = f"Channel {chan}"
+    if rfcor:
+        ktitle = f"{ktitle}; w/ residual fringe correction"
 
     ax.set_title(ktitle, fontsize=fontsize)
 
@@ -151,7 +126,7 @@ if __name__ == "__main__":  # pragma: no cover
         ax.text(
             xval,
             1.0 + k * offval,
-            f"Dither {k+1}",
+            f"D{k+1}",
             va="center",
             ha="right",
             rotation=90.0,
@@ -162,7 +137,7 @@ if __name__ == "__main__":  # pragma: no cover
     ax.text(
         xval,
         1.0 + 4.5 * offval,
-        f"Average",
+        f"Ave",
         va="center",
         ha="right",
         rotation=90.0,
@@ -174,13 +149,42 @@ if __name__ == "__main__":  # pragma: no cover
     xlim[0] = xlim[0] - 0.03 * (xlim[1] - xlim[0])
     ax.set_xlim(xlim)
 
-    ax.set_ylim(0.95, 1.0 + 5 * offval)
+    ax.set_ylim(0.92, 1.0 + 5 * offval)
+
+
+if __name__ == "__main__":  # pragma: no cover
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--chan", help="plot only one channel", choices=[1, 2, 3, 4], type=int
+    )
+    parser.add_argument("--rfcor", help="apply residual fringe correction", action="store_true")
+    parser.add_argument("--dithsub", help="use dithsub pairs", action="store_true")
+    parser.add_argument("--png", help="save figure as a png file", action="store_true")
+    parser.add_argument("--pdf", help="save figure as a pdf file", action="store_true")
+    args = parser.parse_args()
+
+    fontsize = 20
+
+    font = {"size": fontsize}
+
+    plt.rc("font", **font)
+
+    plt.rc("lines", linewidth=1)
+    plt.rc("axes", linewidth=2)
+    plt.rc("xtick.major", width=2)
+    plt.rc("xtick.minor", width=2)
+    plt.rc("ytick.major", width=2)
+    plt.rc("ytick.minor", width=2)
+
+    fig, ax = plt.subplots(1, 1, figsize=(10, 6))
+
+    plot_pfpc(ax, args.chan, args.rfcor, args.dithsub, fontsize)
 
     # ax.legend()
 
     fig.tight_layout()
 
-    save_str = f"figs/mrs_prsrf_chn{args.chan}"
+    save_str = f"figs/mrs_pfpc_chn{args.chan}"
     if args.rfcor:
         save_str = f"{save_str}_rfcor"
     if args.png:

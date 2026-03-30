@@ -183,7 +183,7 @@ if __name__ == "__main__":
                 otab["FLUX_ERROR"] = specclipped[2]
                 otab["RF_FLUX"] = avespec_rf
                 hdu1 = fits.PrimaryHDU(header=h)
-                hdu2 = fits.BinTableHDU(otab, header=h)
+                hdu2 = fits.BinTableHDU(otab)
                 hdulist = fits.HDUList([hdu1, hdu2])
                 hdulist.writeto(ofile, overwrite=True)
 
@@ -194,7 +194,7 @@ if __name__ == "__main__":
                 otab["FLUX_ERROR"] = pipeclipped[2]
                 otab["RF_FLUX"] = pipespec_rf
                 hdu1 = fits.PrimaryHDU(header=h)
-                hdu2 = fits.BinTableHDU(otab, header=h)
+                hdu2 = fits.BinTableHDU(otab)
                 hdulist = fits.HDUList([hdu1, hdu2])
                 hdulist.writeto(ofile, overwrite=True)
 
