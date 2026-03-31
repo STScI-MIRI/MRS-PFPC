@@ -6,12 +6,12 @@ observed with the standard 4 point dither pattern. Use calibration observations
 for flux standards and asteroids to derive the average fixed pattern correction
 for each channel and grating.
 
-In Development!
----------------
+Beta-Testing
+------------
 
-Active development.
-Data/code still in changing.
-Use at your own risk.
+The code is ready for beta-testing.  Please refer to the instructions below.
+For any questions, errors, etc. please open an issue on this repository.
+
 
 Contributors
 ------------
@@ -30,7 +30,8 @@ The PFPC code should be installed using pip with the following command.
 
 `pip install git+https://github.com/STScI-MIRI/MRS-PFPC.git`
 
-PFPC requires the jwst pipeline v1.20.2 or later(TBC) to also be installed. See
+PFPC requires the jwst development pipeline v1.20.2dev (as recent as possible)
+or later(TBC) to also be installed. See
 https://jwst-pipeline.readthedocs.io/en/latest/ for how to install the jwst
 pipeline.
 
@@ -95,7 +96,7 @@ Papers Figures
 
 2. PFPCs w/o and w/ residual fringe correction for each channel.
 
-`source plot_all_pfpc`
+`python MRS_PFPC/plotting/plot_pfpc_multipanel.py`
 
 3. Example of applying the PFPC to a star.
 

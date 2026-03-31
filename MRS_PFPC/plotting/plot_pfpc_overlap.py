@@ -30,6 +30,7 @@ def main():
     parser.add_argument("--onlyseg", help="show only one segment")
     parser.add_argument("--notrfcor", help="Use the FLUX, not the RF_FLUX", action="store_true")
     parser.add_argument("--notrj", help="plot F(nu), not lambda^2 F(nu)", action="store_true")
+    parser.add_argument("--notolapcor", help="do not use the overlap region corrected spectra", action="store_true")
     parser.add_argument("--paperfig", help="zoomed plot for paper", action="store_true")
     parser.add_argument("--png", help="save figure as a png file", action="store_true")
     parser.add_argument("--pdf", help="save figure as a pdf file", action="store_true")
@@ -60,10 +61,15 @@ def main():
     else:
         fluxkey = "RF_FLUX"
 
+    if args.notolapcor:
+        olapstr = ""
+    else:
+        olapstr = "_olapcor"
+
     files = []
     for ch in range(4):
         for gr in ["short", "medium", "long"]:
-            files.append(f"{sname}/{sname}_{filetag}_olapcor_ch{ch+1}-{gr}_x1d.fits")
+            files.append(f"{sname}/{sname}_{filetag}{olapstr}_ch{ch+1}-{gr}_x1d.fits")
 
     n_orders = len(files)
     res = 2500.0
