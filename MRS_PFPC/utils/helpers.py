@@ -36,6 +36,23 @@ pcolors = ["violet", "mediumorchid", "purple",
             "lightcoral", "orangered", "red"]
 # fmt: on
 
+# MRS spectral resolution by channel/grating from JDox
+mrs_specres = {
+    "1A": (3320 + 3710) / 2.0,
+    "1B": (3190 + 3750) / 2.0,
+    "1C": (3100 + 3610) / 2.0,
+    "2A": (2990 + 3110) / 2.0,
+    "2B": (2750 + 3170) / 2.0,
+    "2C": (2860 + 3300) / 2.0,
+    "3A": (2860 + 3300) / 2.0,
+    "3B": (1790 + 2640) / 2.0,
+    "3C": (1980 + 2790) / 2.0,
+    "4A": (1460 + 1930) / 2.0,
+    "4B": (1680 + 1770) / 2.0,
+    "4C": (1630 + 1330) / 2.0,
+}
+rbres = 30000.0  # model resolution
+
 # Return wavelength in microns rounded to 5 decimals
 def rydberg(n1, n2):
     R = 1.09677576e7

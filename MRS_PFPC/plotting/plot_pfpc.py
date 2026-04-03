@@ -7,7 +7,7 @@ import astropy.units as u
 from astropy.io import fits
 from astropy.convolution import Gaussian1DKernel, convolve
 
-from MRS_PFPC.utils.helpers import pcolors, get_h_waves
+from MRS_PFPC.utils.helpers import pcolors, get_h_waves, mrs_specres, rbres
 
 
 def get_overlap_cor(cwave, cflux, pwave, pflux, multfac):
@@ -47,6 +47,8 @@ def main():
     parser.add_argument("--pdf", help="save figure as a pdf file", action="store_true")
     args = parser.parse_args()
 
+    rbres = 45000.0  # model resolution
+
     fontsize = 20
     font = {"size": fontsize}
     plt.rc("font", **font)
@@ -68,6 +70,12 @@ def main():
         for gr in ["short", "medium", "long"]:
             files.append(f"{sname}/{sname}_{filetag}_ch{ch+1}-{gr}_x1d.fits")
 
+    if args.model:
+        mtab = QTable.read(f"{args.model}")
+        mwave = mtab["wavelength"].value * u.micron
+        mflux = mtab["flux"]
+        mflux *= mwave**2
+
     offval = None
 
     lab_xvals = np.zeros(3)
@@ -84,10 +92,13 @@ def main():
         band = h["BAND"].lower()
         if band == "short":
             bnum = 0
+            bname = "A"
         elif band == "medium":
             bnum = 1
+            bname = "B"
         else:
             bnum = 2
+            bname = "C"
         pcol = pcolors[(chn - 1) * 3 + bnum]
 
         if (args.nochan4) & (chn == 4):
@@ -164,18 +175,11 @@ def main():
                 pcwave, pcfluxrf, ppwaverf, ppfluxrf, pmultfacrf
             )
 
-        # multfac = 1.0
-        # multfacrf = 1.0
-        # dsmultfac = 1.0
-        # dsmultfacrf = 1.0
-        # pmultfac = 1.0
-        # pmultfacrf = 1.0
-
         if args.notrj:
             tpflux = cflux
         else:
             tpflux = cflux * np.power(cwave, 2.0)
-        ax.plot(cwave, tpflux * multfac, linestyle="-", color=pcol, alpha=0.8)
+        ax.plot(cwave, tpflux, linestyle="-", color=pcol, alpha=0.8)
 
         if offval is None:
             if args.notrj:
@@ -231,7 +235,7 @@ def main():
         else:
             tpipeflux = pcflux * np.power(pcwave, 2.0)
         ax.plot(
-            pcwave, tpipeflux * pmultfac - offval, linestyle="-", color=pcol, alpha=0.8
+            pcwave, tpipeflux - (1.0 + 0.3) * offval, linestyle="-", color=pcol, alpha=0.8
         )
 
         if args.notrj:
@@ -249,7 +253,7 @@ def main():
         # plot pipeline RF correction for the pipeline reductions
         ax.plot(
             pcwave,
-            (tpipeflux / tpipefluxrf) * aveval * 0.75,
+            (tpipeflux / tpipefluxrf) * aveval * 0.70,
             linestyle="-",
             color="orange",
             alpha=0.8,
@@ -292,32 +296,32 @@ def main():
         hdulist = fits.HDUList([hdu1, hdu2])
         hdulist.writeto(ofile, overwrite=True)
 
+        xrange = np.array(ax.get_xlim())
+
+        if args.model:
+            cres = mrs_specres[f"{chn}{bname}"]
+
+            fwhm_pix = rbres / cres
+            g = Gaussian1DKernel(stddev=fwhm_pix / 2.355)
+            nflux = convolve(mflux, g)
+            mfluxseg = np.interp(pwave, mwave.value, nflux)
+            mfluxseg = mfluxseg.value
+            ax.plot(
+                pwave,
+                mfluxseg + offval,
+                linestyle="-",
+                color="k",
+                alpha=0.5,
+            )
+
     yrange = np.array(yrange)
 
     if args.model:
-        xrange = np.array(ax.get_xlim())
-        mtab = QTable.read(f"{args.model}")
-        mwave = mtab["wavelength"].value * u.micron
-        mflux = mtab["flux"]
-
-        # convolve to approximate channels 1-3 resolution
-        rbres = 40000.0  # model resolution
-        fwhm_pix = rbres / 2500.0
-        g = Gaussian1DKernel(stddev=fwhm_pix / 2.355)
-        mflux = convolve(mflux, g)
-
-        mflux *= mwave**2
-        mflux = mflux * (yrange[1] + 0.15 * (yrange[1] - yrange[0])) / np.average(mflux)
-    
-        gvals = (mwave > data_xrange[0] * u.micron) & (mwave < data_xrange[1] * u.micron)
-        ax.plot(mwave[gvals], mflux[gvals], "k-", alpha=0.5)
-
-        gvals = (mwave > 5.0 * u.micron) & (mwave < 6.0 * u.micron)
         ax.text(
-            4.0, np.nanmean(mflux[gvals]), "model", fontsize=0.6 * fontsize, rotation=45.0, alpha=0.6
+            4.0, 12.5, "model", fontsize=0.6 * fontsize, rotation=45.0, alpha=0.6
         )
 
-    yrange[1] = yrange[1] + 0.25 * (yrange[1] - yrange[0])
+    yrange[1] = yrange[1] + 0.1 * (yrange[1] - yrange[0])
 
     # yrange[1] = yrange[1] + 2 * offval
     yrange[0] = yrange[0] - 0.1 * (yrange[1] - yrange[0])
@@ -340,7 +344,7 @@ def main():
     )
 
     # plot hydrogen transitions
-    y1 = yrange[0] + 0.1 * (yrange[1] - yrange[0])
+    y1 = yrange[0] + 0.075 * (yrange[1] - yrange[0])
     hnames, hwaves = get_h_waves()
 
     for cname, cwave in zip(hnames, hwaves):
