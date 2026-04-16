@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 from astropy.io import fits
 
+from jwst import datamodels
+from MRS_PFPC.utils.fit_trace import fit as fit_trace
+
 
 if __name__ == "__main__":  # pragma: no cover
     parser = argparse.ArgumentParser()
@@ -59,6 +62,20 @@ if __name__ == "__main__":  # pragma: no cover
              "HD163466_c2_e9",
              "HD163466_c2_e10",
              "HD163466_c2_e11",
+             "HD163466_c3_e1",
+             "HD163466_c3_e2",
+             "HD163466_c3_e3",
+             "HD163466_c3_e4",
+             "HD163466_c3_e5",
+             "HD163466_c3_e6",
+             "HD163466_c3_e7",
+             "HD163466_c3_e8",
+             "HD163466_c3_e9",
+             "HD163466_c3_e10",
+             "HD163466_c4_e1",
+             "HD163466_c4_e2",
+             "HD163466_c4_e3",
+             "HD163466_c4_e4",
              ]
 
     for cname in names:
@@ -68,7 +85,6 @@ if __name__ == "__main__":  # pragma: no cover
 
             # get the cube size
             h2 = fits.getheader(files[0], ext=1)
-            print(cname, h2["NAXIS1"], h2["NAXIS2"])
 
             for cfile in files:
 
@@ -77,13 +93,28 @@ if __name__ == "__main__":  # pragma: no cover
                 band = h["BAND"].lower()
 
                 if (chn < 5) & (band == "long"):
+                    print(cfile)
+                    # need the WCS from both files to get alpha, beta
+                    if "_0_" in cfile:
+                        rstr = "0"
+                    else:
+                        rstr = "1"
+                    cube = datamodels.open(cfile.replace(f"{rstr}_x1d", "s3d"))
+                    cal = datamodels.open(cfile.replace(f"{rstr}_x1d", "cal"))
+
                     h = fits.getheader(cfile, ext=1)
                     x = h["EXTR_X"]
                     y = h["EXTR_Y"]
+
+                    ra, dec, lam = cube.meta.wcs.transform('detector', 'world', x, y, 10)
+                    v2, v3 , _ = cal.meta.wcs.transform('world', "v2v3", ra, dec, lam)
+                    alpha, beta ,_ = cal.meta.wcs.transform('world', 'alpha_beta', ra, dec, lam)
+                    print(cdith, alpha, beta, lam)
+
                     #if chn == 1:
                         # print(cfile, x, y)
                     ax[chn - 1].plot(
-                        [x], [y], marker=f"${cdith}$", color="black", linestyle="none"
+                        [alpha], [beta], marker=f"${cdith}$", color="black", linestyle="none"
                     )
                     # ax[chn - 1].plot(
                     #     [x], [y], marker=f"${cname}$", color="black", linestyle="none", ms=20
