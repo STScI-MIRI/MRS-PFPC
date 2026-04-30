@@ -42,17 +42,18 @@ Data for the point source should be saved in a subdirectory named after that
 source (any name will actually work). The raw data files are needed (uncal
 files) and these are downloaded from the jwst archive.
 
-Data is reduced using `pfpc_proc` that runs the `utils/pfpc_proc.py` code. This
-runs the jwst pipeline (separate installation required) with most of the
-standard steps with some changes. Specifically, in calwebb_spec2 the source
-extractions are done at each dither position for each band with recentering on
-the source. The cubes are built in the "ifualign" coordinate system to put the
-sources nominally in the same positions with the same pixel sampling. The
-residual fringe correction is not done in calwebb_spec2. The final calwebb_spec3
-is run and the source is extracted with the same settings to provide the
-pipeline comparisons for the PFPC spectra with the exception of running the
-residual fringe correction step to provide the best regular pipeline spectrum
-possible for comparison.
+To prepare the data for the PFPC correction (i.e., `pfpc_cor` step), the data is
+reduced using `pfpc_proc` that runs the `utils/pfpc_proc.py` code. This runs the
+jwst pipeline (separate installation required) with most of the standard steps
+with some changes. Specifically, in calwebb_spec2 the source extractions are
+done at each dither position for each band with recentering on the source. The
+cubes are built in the "ifualign" coordinate system to put the sources nominally
+in the same positions with the same pixel sampling. The residual fringe
+correction is not done in calwebb_spec2. The final calwebb_spec3 is run and the
+source is extracted with the same settings to provide the pipeline comparisons
+for the PFPC spectra with the exception of running the residual fringe
+correction step to provide the best regular pipeline spectrum possible for
+comparison.
 
 `$ pfpc_proc object_name`
 
@@ -61,10 +62,10 @@ command.
 
 `$ pfpc_cor object_name`
 
-A plot giving the comparision of the PFPC corrected spectra with the default pipeline
+A plot giving the comparison of the PFPC corrected spectra with the default pipeline
 spectra can shown with the following command.  This shows the PFPC and pipeline 
 spectra w/ and w/o residual fringe correction.  The segments are corrected to have
-the same levels using the overlap regions betweewn segements.
+the same levels using the overlap regions between segments.
 
 `$ pfpc_plot object_name`
 
