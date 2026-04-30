@@ -158,7 +158,7 @@ if __name__ == "__main__":  # pragma: no cover
     ax[0, 0].set_ylim(0.0, int(max_ratio) + 1)
     ax[0, 1].set_ylim(0.0, int(max_ratio) + 1)
     ax[1, 0].set_ylim(0.5, 2.5)
-    ax[1, 1].set_ylim(0.0, 1300.0)
+    ax[1, 1].set_ylim(0.0, 1500.0)
 
     fig.tight_layout()
 

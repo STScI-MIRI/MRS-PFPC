@@ -29,7 +29,8 @@ if __name__ == "__main__":
              "4short": [19.2, 19.7], "4medium": [21.5, 22.0], "4long": [25.0, 26.0],
              }
 
-    names = ["HD163466_c1",
+    names = [
+             "HD163466_c1",
              "HD163466_c2_e1",
              "HD163466_c2_e2",
              "HD163466_c2_e3",
@@ -52,11 +53,25 @@ if __name__ == "__main__":
              "HD163466_c3_e9",
              "HD163466_c3_e10",
              "HD163466_c4_e1",
+             "HD163466_c3_e1",
+             "HD163466_c3_e2",
+             "HD163466_c3_e3",
+             "HD163466_c3_e4",
+             "HD163466_c3_e5",
+             "HD163466_c3_e6",
+             "HD163466_c3_e7",
+             "HD163466_c3_e8",
+             "HD163466_c3_e9",
+             "HD163466_c3_e10",
+             "HD163466_c4_e1",
              "HD163466_c4_e2",
              "HD163466_c4_e3",
              "HD163466_c4_e4",
              ]
     nobs = len(names)
+
+    cmap = plt.get_cmap("tab20b")  # Example colormap
+    colors = [cmap(i) for i in np.linspace(0, 1, nobs)]
 
     # save the S/N measurements
     sntab = QTable(
@@ -150,10 +165,10 @@ if __name__ == "__main__":
 
                 if showseg:
                     pflux = allwave * allwave * allspec_rf[:, k]
-                    ax.plot(allwave, pflux + 3.0)
+                    ax.plot(allwave, pflux + 3.0, color=colors[k], alpha=0.5)
 
                     pflux = allwave * allwave * pipespec_rf[:, k]
-                    ax.plot(allwave, pflux)
+                    ax.plot(allwave, pflux, color=colors[k], alpha=0.5)
 
             sigfac = 4.0
             stdfunc = "mad_std"
