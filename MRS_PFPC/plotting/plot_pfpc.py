@@ -330,7 +330,7 @@ def main():
         ax.text(
             4.0,
             lab_xvals[1],
-            "Dithsub RRSRF",
+            "Dithsub PFPC",
             fontsize=0.6 * fontsize,
             rotation=45.0,
             alpha=0.6,

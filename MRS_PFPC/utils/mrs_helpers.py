@@ -36,6 +36,7 @@ def rundet1(filename, outdir, showers=True):
 
 def runspec2(filename, outdir, nocubes=False, badpix_selfcal=True):
     sp2_dict = {}
+    # sp2_dict["fringe"] = {"skip": True}
     sp2_dict["residual_fringe"] = {"skip": True}
     sp2_dict["straylight"] = {"clean_showers": True}
     if badpix_selfcal:
