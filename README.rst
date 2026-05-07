@@ -30,8 +30,7 @@ The PFPC code should be installed using pip with the following command.
 
 `pip install git+https://github.com/STScI-MIRI/MRS-PFPC.git`
 
-PFPC requires the jwst development pipeline v1.20.2dev (as recent as possible)
-or later(TBC) to also be installed. See
+PFPC requires the jwst development pipeline v2.0.0 to also be installed. See
 https://jwst-pipeline.readthedocs.io/en/latest/ for how to install the jwst
 pipeline.
 
