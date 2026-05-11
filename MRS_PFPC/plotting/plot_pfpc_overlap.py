@@ -135,7 +135,7 @@ def main():
         else:
             tpipeflux = pipeflux * np.power(pipewave, 2.0)
         if showseg:
-            ax.plot(pipewave, tpipeflux - offval, linestyle="--", color=pcol, alpha=0.7,
+            ax.plot(pipewave, tpipeflux - offval, linestyle="--", color="b", alpha=0.7,
                     label=plabel_pipe)
 
         if args.notrj:
