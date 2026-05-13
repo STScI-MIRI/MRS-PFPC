@@ -8,7 +8,6 @@ import random
 
 from MRS_PFPC.utils.helpers import sinfo
 
-
 if __name__ == "__main__":  # pragma: no cover
     parser = argparse.ArgumentParser()
     parser.add_argument("--names", help="names of stars", nargs="+")
@@ -30,7 +29,14 @@ if __name__ == "__main__":  # pragma: no cover
     plt.rc("ytick.minor", width=2)
 
     figsize = (12, 8)
-    fig, ax = plt.subplots(ncols=2, nrows=2, figsize=figsize, sharex=True)
+    fig, ax = plt.subplots(
+        ncols=2,
+        nrows=2,
+        figsize=figsize,
+        sharex=True,
+        gridspec_kw={"hspace": 0},
+        layout="constrained",
+    )
 
     if args.names:
         names = args.names
@@ -76,7 +82,12 @@ if __name__ == "__main__":  # pragma: no cover
                     max_ratio = sn4 / sn2
 
                 markers = [segsym[segnum]]
-                fillstyles = ["full"]
+                if cname in ["Jena", "Athalia"]:
+                    markers = ["s"]
+                    fillstyles = ["none"]
+                else:
+                    markers = ["o"]
+                    fillstyles = ["full"]
                 markersizes = [5]
 
                 if "coadd" in cname:
@@ -110,7 +121,7 @@ if __name__ == "__main__":  # pragma: no cover
                     ax[1, 0].plot(
                         # [sn1],
                         [cwave],
-                        [sn4/sn3],
+                        [sn4 / sn3],
                         marker=cmarker,
                         fillstyle=cfillstyle,
                         markersize=cms,
@@ -129,12 +140,13 @@ if __name__ == "__main__":  # pragma: no cover
                     )
                     pname = None
 
-    ax[0, 0].set_title("PFPC improvement vs pipeline")
-    ax[0, 1].set_title("PFPC improvement vs pipeline with rfcorr")
-    ax[1, 0].set_title("PFPC improvement w/ rfcorr")
-    ax[1, 1].set_title("Measured PFPC S/N w/ rfcorr")
+    ax[0, 0].text(5.0, int(max_ratio) + 1, "PFPC improvement vs pipeline")
+    ax[0, 1].text(5.0, int(max_ratio) + 1, "PFPC improvement vs pipeline with rfcorr")
+    ax[1, 0].text(5.0, 2.35, "PFPC improvement w/ rfcorr")
+    ax[1, 1].text(5.0, 1400, "Measured PFPC S/N w/ rfcorr")
 
     ax[0, 0].set_ylabel("(PFPC S/N)/(pipeline S/N)")
+    ax[0, 1].set_ylabel("(PFPC S/N)/(pipeline S/N)")
     ax[1, 0].set_ylabel("(PFPC S/N w/ rfcor)/(PFPC S/N)")
     ax[1, 1].set_ylabel("(PFPC S/N w/ rfcor)")
 
@@ -153,14 +165,20 @@ if __name__ == "__main__":  # pragma: no cover
             if i < 1:
                 ax[1, i].axhline(k + 1, linestyle=":", color="k", alpha=0.5)
 
-    ax[0, 1].legend(fontsize=0.6 * fontsize, ncol=3, handlelength=0, handletextpad=2.0)
+    ax[0, 1].legend(
+        fontsize=0.6 * fontsize,
+        ncol=3,
+        handlelength=0,
+        handletextpad=2.0,
+        bbox_to_anchor=(0.05, 0.5),
+    )
 
-    ax[0, 0].set_ylim(0.0, int(max_ratio) + 1)
-    ax[0, 1].set_ylim(0.0, int(max_ratio) + 1)
+    ax[0, 0].set_ylim(0.0, int(max_ratio) + 1.5)
+    ax[0, 1].set_ylim(0.0, int(max_ratio) + 1.5)
     ax[1, 0].set_ylim(0.5, 2.5)
     ax[1, 1].set_ylim(0.0, 1500.0)
 
-    fig.tight_layout()
+    # fig.tight_layout()
 
     save_str = "figs/sn_improve"
     if args.png:
