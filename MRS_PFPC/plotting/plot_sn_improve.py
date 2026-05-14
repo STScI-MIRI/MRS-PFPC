@@ -88,6 +88,8 @@ if __name__ == "__main__":  # pragma: no cover
                 else:
                     markers = ["o"]
                     fillstyles = ["full"]
+                    if "coadd" in cname:
+                        scolor = "k"
                 markersizes = [5]
 
                 if "coadd" in cname:
