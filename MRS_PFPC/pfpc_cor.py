@@ -31,6 +31,7 @@ def custest(x, axis=0):
             outx[k] = np.nan
     return outx
 
+
 def norm_fit(pwave, pflux):
     pflux = np.array(pflux)
     # fit a quadratic - asteroids
@@ -45,7 +46,9 @@ def norm_fit(pwave, pflux):
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("objname", help="name of object = subdir name with all the data")
+    parser.add_argument(
+        "objname", help="name of object = subdir name with all the data"
+    )
     parser.add_argument(
         "--chan", help="plot only one channel", choices=["1", "2", "3", "4"]
     )
@@ -83,11 +86,20 @@ def main():
     offval = 0.15
 
     # S/N regions
-    snreg = {"1short": [5.28, 5.35], "1medium": [6.0, 6.1], "1long": [7.1, 7.25],
-             "2short": [8.3, 8.4], "2medium": [9.1, 9.3], "2long": [10.9, 11.1],
-             "3short": [12.8, 13.0], "3medium": [14.3, 14.5], "3long": [15.6, 16.0],
-             "4short": [19.2, 19.7], "4medium": [21.5, 22.0], "4long": [25.0, 26.0],
-             }
+    snreg = {
+        "1short": [5.28, 5.35],
+        "1medium": [6.0, 6.1],
+        "1long": [7.1, 7.25],
+        "2short": [8.3, 8.4],
+        "2medium": [9.1, 9.3],
+        "2long": [10.9, 11.1],
+        "3short": [12.8, 13.0],
+        "3medium": [14.3, 14.5],
+        "3long": [15.6, 16.0],
+        "4short": [19.2, 19.7],
+        "4medium": [21.5, 22.0],
+        "4long": [25.0, 26.0],
+    }
 
     # regions to mask for residual fringe corrections
     hnames, hwaves = get_h_waves()
@@ -166,15 +178,25 @@ def main():
         pipe_dithopfr = pipehead["DITHOPFR"]
         pipe_mrsprchn = pipehead["MRSPRCHN"]
         if pipever != pfpc_calver:
-            print(f"Data pipeline version ({pipever}) does not match PFPC ({pfpc_calver})")
+            print(
+                f"Data pipeline version ({pipever}) does not match PFPC ({pfpc_calver})"
+            )
         if pipe_patttype != pfpc_patttype:
-            print(f"Data dither pattern type ({pipe_patttype}) does not match PFPC ({pfpc_patttype})")
+            print(
+                f"Data dither pattern type ({pipe_patttype}) does not match PFPC ({pfpc_patttype})"
+            )
         if pipe_dithdirc != pfpc_dithdirc:
-            print(f"Data dither direction ({pipe_dithdirc}) does not match PFPC ({pfpc_dithdirc})")
+            print(
+                f"Data dither direction ({pipe_dithdirc}) does not match PFPC ({pfpc_dithdirc})"
+            )
         if pipe_dithopfr != pfpc_dithopfr:
-            print(f"Data dither pattern optimization ({pipe_dithopfr}) does not match PFPC ({pfpc_dithopfr})")
+            print(
+                f"Data dither pattern optimization ({pipe_dithopfr}) does not match PFPC ({pfpc_dithopfr})"
+            )
         if pipe_mrsprchn != pfpc_mrsprchn:
-            print(f"Data dither channel optimization ({pipe_mrsprchn}) does not match PFPC ({pfpc_mrsprchn})")
+            print(
+                f"Data dither channel optimization ({pipe_mrsprchn}) does not match PFPC ({pfpc_mrsprchn})"
+            )
 
         pipewave = np.array(ptab["WAVELENGTH"].data)
         if args.asteroid:
@@ -186,7 +208,7 @@ def main():
         if showseg:
             ax.plot(
                 pipewave,
-                pipefluxrf / np.nanmedian(pipefluxrf) + (5. * offval),
+                pipefluxrf / np.nanmedian(pipefluxrf) + (5.0 * offval),
                 "g-",
                 alpha=0.5,
             )
@@ -345,12 +367,17 @@ def main():
             #     sstats_piperf[0] / sstats_piperf[2],
             # )
 
-            sntab.add_row([f"{chn}{band}", snreg[ckey][0], snreg[ckey][0],
-                           sstats[0] / sstats[2],
-                           sstats_fin[0] / sstats_fin[2],
-                           sstats_pipe[0] / sstats_pipe[2],
-                           sstats_piperf[0] / sstats_piperf[2],
-                           ])
+            sntab.add_row(
+                [
+                    f"{chn}{band}",
+                    snreg[ckey][0],
+                    snreg[ckey][0],
+                    sstats[0] / sstats[2],
+                    sstats_fin[0] / sstats_fin[2],
+                    sstats_pipe[0] / sstats_pipe[2],
+                    sstats_piperf[0] / sstats_piperf[2],
+                ]
+            )
 
         # residual definging on the final average
         # sdefringe = rf1d(avespec, refwave, chn+1)
@@ -399,7 +426,6 @@ def main():
         #     "c-",
         #     alpha=0.75,
         # )
-
 
     snfile = f"{cname}/{cname}{extstr}_pfpc_sn.fits"
     sntab.write(snfile, overwrite=True)
