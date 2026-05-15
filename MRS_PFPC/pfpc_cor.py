@@ -9,6 +9,7 @@ from astropy.io import fits
 from astropy.table import QTable
 from astropy.units import UnitsWarning
 from astropy.stats import sigma_clipped_stats
+from astropy.stats import sigma_clip
 from astropy.modeling import models, fitting
 import astropy.units as u
 
@@ -279,17 +280,23 @@ def main():
         # print(chn, band, dith_ave)
 
         # make average corrected spectrum
-        # specclipped = sigma_clipped_stats(
-        #     allspec, axis=1, sigma=2.0
-        # )  # , cenfunc=custest)
         sigfac = 4.0
         stdfunc = "mad_std"
         grow = None
-        specclipped = sigma_clipped_stats(
+        # specclipped = sigma_clipped_stats(
+        #     allspec, axis=1, sigma=sigfac, stdfunc=stdfunc, grow=grow
+        # )  # , cenfunc=custest)
+        # avespec = specclipped[0]
+        spec_clipped = sigma_clip(
             allspec, axis=1, sigma=sigfac, stdfunc=stdfunc, grow=grow
-        )  # , cenfunc=custest)
+        )
+        avespec = np.nanmean(spec_clipped, axis=1)
+        # standard deviation of the measurements
+        avestd = np.nanstd(spec_clipped, axis=1)
+        ngood = np.ma.count(spec_clipped, axis=1)
+        # standard deviation of the mean
+        aveunc = avestd / np.sqrt(ngood)
 
-        avespec = specclipped[0]
         if showseg:
             ax.plot(
                 refwave,
@@ -371,7 +378,7 @@ def main():
         otab = QTable()
         otab["WAVELENGTH"] = refwave * u.micron
         otab["FLUX"] = (avespec / np.square(refwave)) * u.Jy
-        otab["FLUX_ERROR"] = (specclipped[2] / np.square(refwave)) * u.Jy
+        otab["FLUX_ERROR"] = (aveunc / np.square(refwave)) * u.Jy
         otab["RF_FLUX"] = (sdefringe / np.square(refwave)) * u.Jy
         otab.write(ofile, overwrite=True)
         h["PFPC_COR"] = ("Yes", "Corrected with MRS-PFPC")

@@ -388,8 +388,6 @@ if __name__ == "__main__":  # pragma: no cover
                         )
                         pname = None
 
-                        # plot the masked data
-
     xlim = ax.get_xlim()
     xval = xlim[0] + 0.05 * (xlim[1] - xlim[0])
     for k, cdith in enumerate(["1", "2", "3", "4"]):
