@@ -28,7 +28,7 @@ if __name__ == "__main__":  # pragma: no cover
     plt.rc("ytick.major", width=2)
     plt.rc("ytick.minor", width=2)
 
-    figsize = (12, 8)
+    figsize = (14, 8)
     fig, ax = plt.subplots(
         ncols=2,
         nrows=2,
@@ -81,15 +81,32 @@ if __name__ == "__main__":  # pragma: no cover
                 if (sn4 / sn4) > max_ratio:
                     max_ratio = sn4 / sn2
 
+                show_seg = True
                 markers = [segsym[segnum]]
-                if cname in ["Jena", "Athalia"]:
+                if cname in ["Jena", "Athalia",
+                             "Hercynia", "Anastasia", "Haremari", "Henan", "Klumpkea", 
+                             "Asteroid_coadd"]:
                     markers = ["s"]
                     fillstyles = ["none"]
+                    if "4" not in seg:
+                        show_seg = False
                 else:
-                    markers = ["o"]
+                    if "c1" in cname:
+                        markers = ["^"]
+                    elif "c2" in cname:
+                        markers = ["v"]
+                    elif "c3" in cname:
+                        markers = ["<"]
+                    elif "c4" in cname:
+                        markers = [">"]
+                    else:
+                        markers = ["o"]
                     fillstyles = ["full"]
-                    if "coadd" in cname:
-                        scolor = "k"
+                    if "4" in seg:
+                        show_seg = False
+
+                if "coadd" in cname:
+                    scolor = "k"
                 markersizes = [5]
 
                 if "coadd" in cname:
@@ -97,50 +114,51 @@ if __name__ == "__main__":  # pragma: no cover
                     fillstyles.append("none")
                     markersizes.append(10)
 
-                for cmarker, cfillstyle, cms in zip(markers, fillstyles, markersizes):
-                    # versus wavelength
-                    ax[0, 0].plot(
-                        [cwave],
-                        [sn3 / sn1],
-                        marker=cmarker,
-                        fillstyle=cfillstyle,
-                        markersize=cms,
-                        color=scolor,
-                        label=pname,
-                    )
+                if show_seg:
+                    for cmarker, cfillstyle, cms in zip(markers, fillstyles, markersizes):
+                        # versus wavelength
+                        ax[0, 0].plot(
+                            [cwave],
+                            [sn3 / sn1],
+                            marker=cmarker,
+                            fillstyle=cfillstyle,
+                            markersize=cms,
+                            color=scolor,
+                            label=pname,
+                        )
 
-                    ax[0, 1].plot(
-                        [cwave],
-                        [sn4 / sn2],
-                        marker=cmarker,
-                        fillstyle=cfillstyle,
-                        markersize=cms,
-                        color=scolor,
-                        label=pname,
-                    )
+                        ax[0, 1].plot(
+                            [cwave],
+                            [sn4 / sn2],
+                            marker=cmarker,
+                            fillstyle=cfillstyle,
+                            markersize=cms,
+                            color=scolor,
+                            label=pname,
+                        )
 
-                    # versus pipeline S/N
-                    ax[1, 0].plot(
-                        # [sn1],
-                        [cwave],
-                        [sn4 / sn3],
-                        marker=cmarker,
-                        fillstyle=cfillstyle,
-                        markersize=cms,
-                        color=scolor,
-                        label=pname,
-                    )
-                    ax[1, 1].plot(
-                        # [sn2],
-                        [cwave],
-                        [sn4],
-                        marker=cmarker,
-                        fillstyle=cfillstyle,
-                        markersize=cms,
-                        color=scolor,
-                        label=pname,
-                    )
-                    pname = None
+                        # versus pipeline S/N
+                        ax[1, 0].plot(
+                            # [sn1],
+                            [cwave],
+                            [sn4 / sn3],
+                            marker=cmarker,
+                            fillstyle=cfillstyle,
+                            markersize=cms,
+                            color=scolor,
+                            label=pname,
+                        )
+                        ax[1, 1].plot(
+                            # [sn2],
+                            [cwave],
+                            [sn4],
+                            marker=cmarker,
+                            fillstyle=cfillstyle,
+                            markersize=cms,
+                            color=scolor,
+                            label=pname,
+                        )
+                        pname = None
 
     ax[0, 0].text(5.0, int(max_ratio) + 1, "PFPC improvement vs pipeline")
     ax[0, 1].text(5.0, int(max_ratio) + 1, "PFPC improvement vs pipeline with rfcorr")
@@ -167,9 +185,16 @@ if __name__ == "__main__":  # pragma: no cover
             if i < 1:
                 ax[1, i].axhline(k + 1, linestyle=":", color="k", alpha=0.5)
 
+    if len(names) > 20:
+        ffac = 0.55
+        ncol = 4
+    else:
+        ffac = 0.6
+        ncol = 3
+
     ax[0, 1].legend(
-        fontsize=0.6 * fontsize,
-        ncol=3,
+        fontsize=ffac * fontsize,
+        ncol=ncol,
         handlelength=0,
         handletextpad=2.0,
         bbox_to_anchor=(0.05, 0.5),

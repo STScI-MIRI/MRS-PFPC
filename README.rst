@@ -114,4 +114,4 @@ Papers Figures
 the S/N measurements made when the PFPC correction is applied to each observation.
 This includes the coadd of all the different epochs.
 
-`python MRS_PFPC/plotting/plot_sn_improve.py --names HD163466_c1 HD163466_c2_e1  HD163466_c2_e2 HD163466_c2_e3 HD163466_c2_e4 HD163466_c2_e5 HD163466_c2_e6 HD163466_c2_e8 HD163466_c2_e9 HD163466_c2_e10 HD163466_c2_e11 HD163466_c3_e1 HD163466_c3_e2 HD163466_c3_e3 HD163466_c3_e4 HD163466_coadd`
+`python MRS_PFPC/plotting/plot_sn_improve.py --names HD163466_c1 HD163466_c2_e1  HD163466_c2_e2 HD163466_c2_e3 HD163466_c2_e4 HD163466_c2_e5 HD163466_c2_e6 HD163466_c2_e8 HD163466_c2_e9 HD163466_c2_e10 HD163466_c2_e11 HD163466_c3_e1  HD163466_c3_e2 HD163466_c3_e3 HD163466_c3_e4 HD163466_c3_e5 HD163466_c3_e6 HD163466_c3_e8 HD163466_c3_e9 HD163466_c3_e10 HD163466_c4_e1 HD163466_c4_e2 HD163466_c4_e3 HD163466_c4_e4 HD163466_coadd Hercynia Anastasia Haremari Henan Klumpkea Asteroid_coadd`

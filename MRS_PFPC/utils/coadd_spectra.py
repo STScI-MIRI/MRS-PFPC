@@ -16,11 +16,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "--showchan4", help="show channel 4 with other channels", action="store_true"
     )
+    parser.add_argument("--asteroid", help="fit a quadratic to the continuum before coadding", action="store_true")
     parser.add_argument("--png", help="save figure as a png file", action="store_true")
     parser.add_argument("--pdf", help="save figure as a pdf file", action="store_true")
     args = parser.parse_args()
-
-    args.outbase = "HD163466_coadd/HD163466_coadd"
 
     # S/N regions
     snreg = {"1short": [5.28, 5.35], "1medium": [6.0, 6.1], "1long": [7.1, 7.25],
@@ -29,45 +28,50 @@ if __name__ == "__main__":
              "4short": [19.2, 19.7], "4medium": [21.5, 22.0], "4long": [25.0, 26.0],
              }
 
-    names = [
-             "HD163466_c1",
-             "HD163466_c2_e1",
-             "HD163466_c2_e2",
-             "HD163466_c2_e3",
-             "HD163466_c2_e4",
-             "HD163466_c2_e5",
-             "HD163466_c2_e6",
-             # "HD163466_c2_e7", # noisier than the rest
-             "HD163466_c2_e8",
-             "HD163466_c2_e9",
-             "HD163466_c2_e10",
-             "HD163466_c2_e11",
-             "HD163466_c3_e1",
-             "HD163466_c3_e2",
-             "HD163466_c3_e3",
-             "HD163466_c3_e4",
-             "HD163466_c3_e5",
-             "HD163466_c3_e6",
-             "HD163466_c3_e7",
-             "HD163466_c3_e8",
-             "HD163466_c3_e9",
-             "HD163466_c3_e10",
-             "HD163466_c4_e1",
-             "HD163466_c3_e1",
-             "HD163466_c3_e2",
-             "HD163466_c3_e3",
-             "HD163466_c3_e4",
-             "HD163466_c3_e5",
-             "HD163466_c3_e6",
-             "HD163466_c3_e7",
-             "HD163466_c3_e8",
-             "HD163466_c3_e9",
-             "HD163466_c3_e10",
-             "HD163466_c4_e1",
-             "HD163466_c4_e2",
-             "HD163466_c4_e3",
-             "HD163466_c4_e4",
-             ]
+    if args.asteroid:
+        args.outbase = "Asteroid_coadd/Asteroid_coadd"
+        names = ["Anastasia", "Hercynia", "Henan", "Haremari", "Klumpkea"]
+    else:
+        args.outbase = "HD163466_coadd/HD163466_coadd"
+        names = [
+                "HD163466_c1",
+                "HD163466_c2_e1",
+                "HD163466_c2_e2",
+                "HD163466_c2_e3",
+                "HD163466_c2_e4",
+                "HD163466_c2_e5",
+                "HD163466_c2_e6",
+                # "HD163466_c2_e7", # noisier than the rest
+                "HD163466_c2_e8",
+                "HD163466_c2_e9",
+                "HD163466_c2_e10",
+                "HD163466_c2_e11",
+                "HD163466_c3_e1",
+                "HD163466_c3_e2",
+                "HD163466_c3_e3",
+                "HD163466_c3_e4",
+                "HD163466_c3_e5",
+                "HD163466_c3_e6",
+                "HD163466_c3_e7",
+                "HD163466_c3_e8",
+                "HD163466_c3_e9",
+                "HD163466_c3_e10",
+                "HD163466_c4_e1",
+                "HD163466_c3_e1",
+                "HD163466_c3_e2",
+                "HD163466_c3_e3",
+                "HD163466_c3_e4",
+                "HD163466_c3_e5",
+                "HD163466_c3_e6",
+                "HD163466_c3_e7",
+                "HD163466_c3_e8",
+                "HD163466_c3_e9",
+                "HD163466_c3_e10",
+                "HD163466_c4_e1",
+                "HD163466_c4_e2",
+                "HD163466_c4_e3",
+                "HD163466_c4_e4",
+                ]
     nobs = len(names)
 
     cmap = plt.get_cmap("tab20b")  # Example colormap
@@ -144,6 +148,25 @@ if __name__ == "__main__":
                     pipespec = np.full((nwaves, nobs), np.nan)
                     pipespec_rf = np.full((nwaves, nobs), np.nan)
 
+                if args.asteroid:  # fit a quadratic as coadd is of different asteroids
+                    fit = fitting.LinearLSQFitter()
+                    line_init = models.Polynomial1D(2)
+                    gvals = allwave < 27.5
+
+                    # PFPC
+                    for ftype in ["FLUX", "RF_FLUX"]:
+                        fflux = itab[ftype].value
+                        fitted_line = fit(line_init, allwave[gvals], fflux[gvals])
+                        mfluxseg = fitted_line(allwave)
+                        itab[ftype] = fflux / mfluxseg
+
+                    # pipeline
+                    for ftype in ["FLUX", "RF_FLUX"]:
+                        fflux = pipetab[ftype].value
+                        fitted_line = fit(line_init, allwave[gvals], fflux[gvals])
+                        mfluxseg = fitted_line(allwave)
+                        pipetab[ftype] = fflux / mfluxseg
+
                 allspec[:, k] = itab["FLUX"].value
                 allspec_rf[:, k] = itab["RF_FLUX"].value
 
@@ -164,10 +187,16 @@ if __name__ == "__main__":
                 pipespec_rf[:, k] *= pipedave / pipedithave[k]
 
                 if showseg:
-                    pflux = allwave * allwave * allspec_rf[:, k]
+                    if args.asteroid:
+                        pflux = allspec_rf[:, k]
+                    else:
+                        pflux = allwave * allwave * allspec_rf[:, k]
                     ax.plot(allwave, pflux + 3.0, color=colors[k], alpha=0.5)
 
-                    pflux = allwave * allwave * pipespec_rf[:, k]
+                    if args.asteroid:
+                        pflux = pipespec_rf[:, k]
+                    else:
+                        pflux = allwave * allwave * pipespec_rf[:, k]
                     ax.plot(allwave, pflux, color=colors[k], alpha=0.5)
 
             sigfac = 4.0
@@ -194,8 +223,12 @@ if __name__ == "__main__":
             pipespec = pipeclipped[0]
             pipespec_rf = pipeclipped_rf[0]
 
-            pflux = allwave * allwave * avespec_rf
-            pflux2 = allwave * allwave * pipespec_rf
+            if args.asteroid:
+                pflux = avespec_rf
+                pflux2 = pipespec_rf
+            else:
+                pflux = allwave * allwave * avespec_rf
+                pflux2 = allwave * allwave * pipespec_rf
             if showseg:
                 ax.plot(allwave, pflux + 4.0, "k-")
                 ax.plot(allwave, pflux2 + 1.0, "k-")
