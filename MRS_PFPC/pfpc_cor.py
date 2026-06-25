@@ -411,7 +411,7 @@ def main():
         h["PFPC_COR"] = ("Yes", "Corrected with MRS-PFPC")
         h["MRS-PFPC"] = "MRS Point Fixed Pattern Correction"
         h["REPO"] = "https://github.com/STScI-MIRI/MRS-PFPC"
-        h["REF"] = "Gordon et al. (2026, in prep)"
+        h["REF"] = "Gordon et al. (2026, ApJ, submitted)"
         hdu1 = fits.PrimaryHDU(header=h)
         hdu2 = fits.BinTableHDU(otab)
         hdulist = fits.HDUList([hdu1, hdu2])
