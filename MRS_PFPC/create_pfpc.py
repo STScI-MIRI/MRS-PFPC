@@ -12,7 +12,7 @@ from astropy.modeling import models, fitting
 from astropy.stats import sigma_clip
 import astropy.units as u
 
-from MRS_PFPC.utils.helpers import sinfo, get_h_waves, mrs_specres, rbres
+from MRS_PFPC.utils.helpers import sinfo, sinfo_test, get_h_waves, mrs_specres, rbres
 
 
 if __name__ == "__main__":  # pragma: no cover
@@ -22,9 +22,13 @@ if __name__ == "__main__":  # pragma: no cover
     )
     parser.add_argument("--onlyseg", help="show only one segment")
     parser.add_argument("--dithsub", help="use dithsub pairs", action="store_true")
+    parser.add_argument("--testnewref", help="test new reference files", action="store_true")
     parser.add_argument("--png", help="save figure as a png file", action="store_true")
     parser.add_argument("--pdf", help="save figure as a pdf file", action="store_true")
     args = parser.parse_args()
+
+    if args.testnewref:
+        sinfo = sinfo_test
 
     # get the location of the PFPC files
     ref = importlib_resources.files("MRS_PFPC") / "refs"
