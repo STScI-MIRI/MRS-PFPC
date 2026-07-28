@@ -9,7 +9,6 @@ from jwst.associations import asn_from_list as afl
 from jwst.associations.lib.rules_level2_base import DMSLevel2bBase
 from jwst.associations.lib.rules_level3_base import DMS_Level3_Base
 
-
 # get defaults for running the different pipeline stages
 from MRS_PFPC.utils.mrs_helpers import (
     rundet1,
@@ -93,13 +92,20 @@ def writel3asn(scifiles, bgfiles, asnfile, prodname):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("objname", help="name of object = subdir name with all the data")
+    parser.add_argument(
+        "objname", help="name of object = subdir name with all the data"
+    )
     parser.add_argument(
         "--dithsub", help="do the pair dither subtraction", action="store_true"
     )
     parser.add_argument("--det1skip", help="skip dectector1", action="store_true")
     parser.add_argument("--spec2skip", help="skip dectector1", action="store_true")
     parser.add_argument("--spec3skip", help="skip dectector1", action="store_true")
+    parser.add_argument(
+        "--testnewrefs",
+        help="test new MRS flat field and photom reference files",
+        action="store_true",
+    )
     args = parser.parse_args()
 
     # name of star
@@ -156,13 +162,24 @@ def main():
     ratefiles = [os.path.abspath(cfile) for cfile in ratefiles]
     print(ratefiles)
 
+    if args.testnewrefs:
+        flatfile = "MIRI_FM_MIRIFUSHORT_12SHORT_FLAT_2026TEST.fits"
+        photomfile = "MIRI_FM_MIRIFUSHORT_12SHORT_PHOTOM_2026TEST.fits"
+    else:
+        flatfile = None
+        photomfile = None
+
     if dospec2:
-        for file in ratefiles[0:1]:
+        for file in ratefiles:
             asnfile = os.path.join(output_dir, "l2asn.json")
             writel2asn(file, None, ratefiles, asnfile, "Level2")
-            runspec2(asnfile, output_dir, badpix_selfcal=badpix_selfcal,
-                     flatfile="MIRI_FM_MIRIFUSHORT_12SHORT_FLAT_2026TEST.fits",
-                     photomfile="MIRI_FM_MIRIFUSHORT_12SHORT_PHOTOM_2026TEST.fits")
+            runspec2(
+                asnfile,
+                output_dir,
+                badpix_selfcal=badpix_selfcal,
+                flatfile=flatfile,
+                photomfile=photomfile,
+            )
     else:
         print("Skipping Spec2 processing")
 
@@ -193,39 +210,41 @@ def main():
     else:
         print("Skipping Spec3 processing")
 
-    # do the leak correction for the individual dithers
-    cname = args.objname
-    # get the 1st dithers only
-    if args.dithsub:
-        files = glob.glob(f"{cname}/*00001*_dithsub_*x1d.fits")
-    else:
-        files = glob.glob(f"{main_path}/jw*_00001_mirifushort_?_x1d.fits") + glob.glob(
-            f"{main_path}/jw*_00001_mirifulong_?_x1d.fits"
-        )
+    if dospec3:
 
-    print("correcting the leak in 3A using 1B")
-    for cfile in files:
-        # find the two segments needed = 3A and 1B
-        h = fits.getheader(cfile)
-        chn = int(h["CHANNEL"])
-        band = h["BAND"].lower()
-        if (chn == 1) & (band == "medium"):
-            file_1b = cfile
-        if (chn == 3) & (band == "short"):
-            file_3a = cfile
+        # do the leak correction for the individual dithers
+        cname = args.objname
+        # get the 1st dithers only
+        if args.dithsub:
+            files = glob.glob(f"{cname}/*00001*_dithsub_*x1d.fits")
+        else:
+            files = glob.glob(f"{main_path}/jw*_00001_mirifushort_?_x1d.fits") + glob.glob(
+                f"{main_path}/jw*_00001_mirifulong_?_x1d.fits"
+            )
 
-    # get the location of the leak correction file
-    ref = importlib_resources.files("MRS_PFPC") / "leak"
-    with importlib_resources.as_file(ref) as cdata_path:
-        ref_path = str(cdata_path)
+        print("correcting the leak in 3A using 1B")
+        for cfile in files:
+            # find the two segments needed = 3A and 1B
+            h = fits.getheader(cfile)
+            chn = int(h["CHANNEL"])
+            band = h["BAND"].lower()
+            if (chn == 1) & (band == "medium"):
+                file_1b = cfile
+            if (chn == 3) & (band == "short"):
+                file_3a = cfile
 
-    # loop over the dithers and correct the 3A segments using the 1B segment
-    for cdith in ["1", "2", "3", "4"]:
-        correct_miri_mrs_spectral_leak(
-            file_3a.replace("_00001_", f"_0000{cdith}_"),
-            file_1b.replace("_00001_", f"_0000{cdith}_"),
-            f"{ref_path}/MRS_spectral_leak_fractional.fits",
-        )
+        # get the location of the leak correction file
+        ref = importlib_resources.files("MRS_PFPC") / "leak"
+        with importlib_resources.as_file(ref) as cdata_path:
+            ref_path = str(cdata_path)
+
+        # loop over the dithers and correct the 3A segments using the 1B segment
+        for cdith in ["1", "2", "3", "4"]:
+            correct_miri_mrs_spectral_leak(
+                file_3a.replace("_00001_", f"_0000{cdith}_"),
+                file_1b.replace("_00001_", f"_0000{cdith}_"),
+                f"{ref_path}/MRS_spectral_leak_fractional.fits",
+            )
 
 
 if __name__ == "__main__":
