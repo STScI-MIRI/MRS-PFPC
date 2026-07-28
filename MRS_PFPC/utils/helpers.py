@@ -2,7 +2,6 @@ import numpy as np
 import astropy.units as u
 from scipy.signal import medfilt
 
-
 # fmt: off
 #   info is ([short, medium, long], model file, type)
 sinfo = {"muCol": (["jw04497004001_04101", "jw04497004001_06101", "jw04497004001_08101"], "mucol_mod_006_r10000.fits", "hot", "purple"),
@@ -40,6 +39,12 @@ sinfo = {"muCol": (["jw04497004001_04101", "jw04497004001_06101", "jw04497004001
         # "Hercynia": (["jw02361005001_03105", "jw02361005001_03103", "jw02361005001_03101"], None, "asteroid", "black"),  # medium S/N, lots rejected in sigma clipping
         }
 
+sinfo_test = {#"muCol": (["jw04497004001_04101", "jw04497004001_06101", "jw04497004001_08101"], "mucol_mod_006_r10000.fits", "hot", "blue"),
+    "Athalia": (["jw01549006001_04106", "jw01549006001_04104", "jw01549006001_04102"], None, "asteroid", "green"),
+    #"muCol_test": (["jw04497004001_04101", "jw04497004001_06101", "jw04497004001_08101"], "mucol_mod_006_r10000.fits", "hot", "purple"),
+    "Athalia_test": (["jw01549006001_04106", "jw01549006001_04104", "jw01549006001_04102"], None, "asteroid", "lightcoral")
+    }
+
 # colors for different MRS segments
 pcolors = ["violet", "mediumorchid", "purple",
             "dodgerblue", "blue", "darkblue",
@@ -63,6 +68,7 @@ mrs_specres = {
     "4C": (1630 + 1330) / 2.0,
 }
 rbres = 30000.0  # model resolution
+
 
 # Return wavelength in microns rounded to 5 decimals
 def rydberg(n1, n2):
