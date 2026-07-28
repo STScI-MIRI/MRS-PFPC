@@ -29,6 +29,9 @@ if __name__ == "__main__":  # pragma: no cover
 
     if args.testnewref:
         sinfo = sinfo_test
+        extoutstr = "_testnewref"
+    else:
+        extoutstr = ""
 
     # get the location of the PFPC files
     ref = importlib_resources.files("MRS_PFPC") / "refs"
@@ -350,7 +353,7 @@ if __name__ == "__main__":  # pragma: no cover
                 otab.meta["REPO"] = "https://github.com/STScI-MIRI/MRS-PFPC"
                 otab.meta["REF"] = "Gordon et al. (2026, in prep)"
                 otab.write(
-                    f"MRS_PFPC/refs/mrs_pfpc{extstr}_chn{i+1}_{gnames_out[j]}.fits",
+                    f"MRS_PFPC/refs/mrs_pfpc{extstr}_chn{i+1}_{gnames_out[j]}{extoutstr}.fits",
                     overwrite=True,
                 )
 
