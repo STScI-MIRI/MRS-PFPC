@@ -210,41 +210,39 @@ def main():
     else:
         print("Skipping Spec3 processing")
 
-    if dospec3:
+    # do the leak correction for the individual dithers
+    cname = args.objname
+    # get the 1st dithers only
+    if args.dithsub:
+        files = glob.glob(f"{cname}/*00001*_dithsub_*x1d.fits")
+    else:
+        files = glob.glob(f"{main_path}/jw*_00001_mirifushort_?_x1d.fits") + glob.glob(
+            f"{main_path}/jw*_00001_mirifulong_?_x1d.fits"
+        )
 
-        # do the leak correction for the individual dithers
-        cname = args.objname
-        # get the 1st dithers only
-        if args.dithsub:
-            files = glob.glob(f"{cname}/*00001*_dithsub_*x1d.fits")
-        else:
-            files = glob.glob(f"{main_path}/jw*_00001_mirifushort_?_x1d.fits") + glob.glob(
-                f"{main_path}/jw*_00001_mirifulong_?_x1d.fits"
-            )
+    print("correcting the leak in 3A using 1B")
+    for cfile in files:
+        # find the two segments needed = 3A and 1B
+        h = fits.getheader(cfile)
+        chn = int(h["CHANNEL"])
+        band = h["BAND"].lower()
+        if (chn == 1) & (band == "medium"):
+            file_1b = cfile
+        if (chn == 3) & (band == "short"):
+            file_3a = cfile
 
-        print("correcting the leak in 3A using 1B")
-        for cfile in files:
-            # find the two segments needed = 3A and 1B
-            h = fits.getheader(cfile)
-            chn = int(h["CHANNEL"])
-            band = h["BAND"].lower()
-            if (chn == 1) & (band == "medium"):
-                file_1b = cfile
-            if (chn == 3) & (band == "short"):
-                file_3a = cfile
+    # get the location of the leak correction file
+    ref = importlib_resources.files("MRS_PFPC") / "leak"
+    with importlib_resources.as_file(ref) as cdata_path:
+        ref_path = str(cdata_path)
 
-        # get the location of the leak correction file
-        ref = importlib_resources.files("MRS_PFPC") / "leak"
-        with importlib_resources.as_file(ref) as cdata_path:
-            ref_path = str(cdata_path)
-
-        # loop over the dithers and correct the 3A segments using the 1B segment
-        for cdith in ["1", "2", "3", "4"]:
-            correct_miri_mrs_spectral_leak(
-                file_3a.replace("_00001_", f"_0000{cdith}_"),
-                file_1b.replace("_00001_", f"_0000{cdith}_"),
-                f"{ref_path}/MRS_spectral_leak_fractional.fits",
-            )
+    # loop over the dithers and correct the 3A segments using the 1B segment
+    for cdith in ["1", "2", "3", "4"]:
+        correct_miri_mrs_spectral_leak(
+            file_3a.replace("_00001_", f"_0000{cdith}_"),
+            file_1b.replace("_00001_", f"_0000{cdith}_"),
+            f"{ref_path}/MRS_spectral_leak_fractional.fits",
+        )
 
 
 if __name__ == "__main__":
