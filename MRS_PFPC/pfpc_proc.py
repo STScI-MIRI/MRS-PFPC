@@ -157,10 +157,11 @@ def main():
     print(ratefiles)
 
     if dospec2:
-        for file in ratefiles:
+        for file in ratefiles[0:1]:
             asnfile = os.path.join(output_dir, "l2asn.json")
             writel2asn(file, None, ratefiles, asnfile, "Level2")
-            runspec2(asnfile, output_dir, badpix_selfcal=badpix_selfcal)
+            runspec2(asnfile, output_dir, badpix_selfcal=badpix_selfcal,
+                     flatfile="MIRI_FM_MIRIFUSHORT_12SHORT_FLAT_2026TEST.fits")
     else:
         print("Skipping Spec2 processing")
 

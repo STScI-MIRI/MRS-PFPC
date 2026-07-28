@@ -34,9 +34,13 @@ def rundet1(filename, outdir, showers=True):
     )
 
 
-def runspec2(filename, outdir, nocubes=False, badpix_selfcal=True):
+def runspec2(filename, outdir, nocubes=False, badpix_selfcal=True,
+             flatfile=None,
+             ):
     sp2_dict = {}
     # sp2_dict["fringe"] = {"skip": True}
+    if flatfile is not None:
+        sp2_dict["flat_field"] = {"overide_flat": flatfile}
     sp2_dict["residual_fringe"] = {"skip": True}
     sp2_dict["straylight"] = {"clean_showers": True}
     if badpix_selfcal:
