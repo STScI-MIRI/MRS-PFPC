@@ -56,9 +56,6 @@ def runspec2(filename, outdir, nocubes=False, badpix_selfcal=True,
         sp2_dict["cube_build"] = {"output_type": "band", "coord_system": "ifualign"}
         sp2_dict["extract_1d"] = {"ifu_autocen": True}
 
-    print(sp2_dict)
-    exit()
-
     Spec2Pipeline.call(filename, steps=sp2_dict, output_dir=outdir, save_results=True)
 
 
