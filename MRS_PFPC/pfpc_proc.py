@@ -163,8 +163,12 @@ def main():
     print(ratefiles)
 
     if args.testnewrefs:
-        flatfile = "MIRI_FM_MIRIFUSHORT_12SHORT_FLAT_2026TEST.fits"
-        photomfile = "MIRI_FM_MIRIFUSHORT_12SHORT_PHOTOM_2026TEST.fits"
+        # 2A
+        # flatfile = "MIRI_FM_MIRIFUSHORT_12SHORT_FLAT_2026TEST.fits"
+        # photomfile = "MIRI_FM_MIRIFUSHORT_12SHORT_PHOTOM_2026TEST.fits"
+        # 2C
+        flatfile = "MIRI_FM_MIRIFUSHORT_12LONG_FLAT_2026TEST.fits"
+        photomfile = "MIRI_FM_MIRIFUSHORT_12LONG_PHOTOM_2026TEST.fits"
     else:
         flatfile = None
         photomfile = None
