@@ -2,12 +2,13 @@ import argparse
 import warnings
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.ticker import ScalarFormatter
 from astropy.table import QTable
 import astropy.units as u
 from astropy.io import fits
 from astropy.convolution import Gaussian1DKernel, convolve
 
-from MRS_PFPC.utils.helpers import pcolors, get_h_waves, mrs_specres, rbres
+from MRS_PFPC.utils.helpers import pcolors, get_h_waves, mrs_specres
 
 
 def get_overlap_cor(cwave, cflux, pwave, pflux, multfac):
@@ -41,6 +42,9 @@ def main():
     )
     parser.add_argument(
         "--nochan4", help="do not show channel 4 with other channels", action="store_true"
+    )
+    parser.add_argument(
+        "--bestonly", help="show residual fringe corrected specta only", action="store_true"
     )
     parser.add_argument("--model", help="add a model to the plot")
     parser.add_argument("--png", help="save figure as a png file", action="store_true")
@@ -179,7 +183,8 @@ def main():
             tpflux = cflux
         else:
             tpflux = cflux * np.power(cwave, 2.0)
-        ax.plot(cwave, tpflux, linestyle="-", color=pcol, alpha=0.8)
+        if not args.bestonly:
+            ax.plot(cwave, tpflux, linestyle="-", color=pcol, alpha=0.8)
 
         if offval is None:
             if args.notrj:
@@ -202,13 +207,14 @@ def main():
         )
 
         # plot pipeline RF correction
-        ax.plot(
-            pcwave,
-            (tpflux / tpfluxrf) * aveval * 0.95,
-            linestyle="-",
-            color="orange",
-            alpha=0.8,
-        )
+        if not args.bestonly:
+            ax.plot(
+                pcwave,
+                (tpflux / tpfluxrf) * aveval * 0.95,
+                linestyle="-",
+                color="orange",
+                alpha=0.8,
+            )
 
         # dithsub
         if args.dithsub:
@@ -234,9 +240,17 @@ def main():
             tpipeflux = pcflux
         else:
             tpipeflux = pcflux * np.power(pcwave, 2.0)
-        ax.plot(
-            pcwave, tpipeflux - (1.0 + 0.3) * offval, linestyle="-", color=pcol, alpha=0.8
-        )
+        if not args.bestonly:
+            ax.plot(
+                pcwave, tpipeflux - (1.0 + 0.3) * offval, linestyle="-", color=pcol, alpha=0.8
+            )
+            offvalfac = (1 - 0.3)
+            offvalfac2 = 1.2
+            offvalfac3 = 0.0
+        else:
+            offvalfac = 0.2
+            offvalfac2 = 0.3
+            offvalfac3 = 0.2
 
         if args.notrj:
             tpipefluxrf = pcfluxrf
@@ -244,26 +258,27 @@ def main():
             tpipefluxrf = pcfluxrf * np.power(pcwave, 2.0)
         ax.plot(
             pcwave,
-            tpipefluxrf * pmultfacrf - (1 - 0.3) * offval,
+            tpipefluxrf * pmultfacrf - offvalfac * offval,
             linestyle="-",
             color=pcol,
             alpha=0.8,
         )
 
         # plot pipeline RF correction for the pipeline reductions
-        ax.plot(
-            pcwave,
-            (tpipeflux / tpipefluxrf) * aveval * 0.70,
-            linestyle="-",
-            color="orange",
-            alpha=0.8,
-        )
+        if not args.bestonly:
+            ax.plot(
+                pcwave,
+                (tpipeflux / tpipefluxrf) * aveval * 0.70,
+                linestyle="-",
+                color="orange",
+                alpha=0.8,
+            )
 
         if (chn == 1) & (band == "short"):
-            lab_xvals[0] = np.nanmedian(tpflux)
+            lab_xvals[0] = np.nanmedian(tpflux) + offvalfac3 * offval
             if args.dithsub:
                 lab_xvals[1] = np.nanmedian(tdsflux + offval)
-            lab_xvals[2] = np.nanmedian(tpipeflux - offval)
+            lab_xvals[2] = np.nanmedian(tpipeflux - offvalfac2 * offval)
 
         if chn < 4:
             yrange = ax.get_ylim()
@@ -318,7 +333,7 @@ def main():
 
     if args.model:
         ax.text(
-            4.0, 12.5, "model", fontsize=0.6 * fontsize, rotation=45.0, alpha=0.6
+            4.5, 12.5, "model", fontsize=0.6 * fontsize, rotation=45.0, alpha=0.6
         )
 
     yrange[1] = yrange[1] + 0.1 * (yrange[1] - yrange[0])
@@ -328,7 +343,7 @@ def main():
 
     if args.dithsub:
         ax.text(
-            4.0,
+            4.5,
             lab_xvals[1],
             "Dithsub PFPC",
             fontsize=0.6 * fontsize,
@@ -337,10 +352,10 @@ def main():
         )
 
     ax.text(
-        4.0, lab_xvals[0], "PFPC", fontsize=0.6 * fontsize, rotation=45.0, alpha=0.6
+        4.5, lab_xvals[0], "PFPC", fontsize=0.6 * fontsize, rotation=45.0, alpha=0.6
     )
     ax.text(
-        4.0, lab_xvals[2], "Pipeline", fontsize=0.6 * fontsize, rotation=45.0, alpha=0.6
+        4.5, lab_xvals[2], "Pipeline", fontsize=0.6 * fontsize, rotation=45.0, alpha=0.6
     )
 
     # plot hydrogen transitions
@@ -364,8 +379,15 @@ def main():
                 alpha=0.25,
             )
 
+    ax.set_xscale("log")
+    xticks = [5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0]
+    ax.xaxis.set_major_formatter(ScalarFormatter())
+    ax.xaxis.set_minor_formatter(ScalarFormatter())
+    ax.set_xticks(xticks, minor=True)
+    ax.tick_params(axis="x", which="minor", labelsize=fontsize * 0.8)
+
     xrange = np.array(ax.get_xlim())
-    xrange[0] = xrange[0] - 0.03 * (xrange[1] - xrange[0])
+    xrange[0] = xrange[0] - 0.01 * (xrange[1] - xrange[0])
     ax.set_xlim(xrange)
     ax.set_ylim(yrange)
     ax.set_title(sname)
@@ -375,6 +397,8 @@ def main():
     plt.tight_layout()
 
     fname = f"figs/{sname}_pfpc"
+    if args.bestonly:
+        fname = f"{fname}_bestonly"
     if args.png:
         fig.savefig(f"{fname}.png")
     elif args.pdf:

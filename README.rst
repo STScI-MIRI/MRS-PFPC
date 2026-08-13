@@ -106,6 +106,11 @@ Papers Figures
 
 `pfpc_plot HD163466_coadd --model models/hd163466_mod_005_r10000.fits --nochan4`
 
+Modified version just showing the best possible. Not in paper, but useful for
+talks.
+
+`pfpc_plot HD163466_coadd --model models/hd163466_mod_005_r10000.fits --nochan4 --bestonly`
+
 5. 5.8 micron artifact example.
 
 `python MRS_PFPC/plotting/plot_pfpc_overlap.py HD163466_coadd --paperfig`
