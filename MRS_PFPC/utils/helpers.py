@@ -101,7 +101,11 @@ def get_h_waves():
         hnames.append("HI " + str(n2) + "-" + str(n1))
         hwaves.append(rydberg(n1, n2))
     n1 = 9
-    for n2 in range(12, 18, 1):
+    for n2 in range(12, 16, 1):
+        hnames.append("HI " + str(n2) + "-" + str(n1))
+        hwaves.append(rydberg(n1, n2))
+    n1 = 10
+    for n2 in range(15, 16, 1):
         hnames.append("HI " + str(n2) + "-" + str(n1))
         hwaves.append(rydberg(n1, n2))
 

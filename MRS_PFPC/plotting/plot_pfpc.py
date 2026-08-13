@@ -357,6 +357,9 @@ def main():
     ax.text(
         4.5, lab_xvals[2], "Pipeline", fontsize=0.6 * fontsize, rotation=45.0, alpha=0.6
     )
+    ax.text(
+        4.6, lab_xvals[2] - 0.05 * offval, "(v2.0.0)", fontsize=0.4 * fontsize, rotation=45.0, alpha=0.6
+    )
 
     # plot hydrogen transitions
     y1 = yrange[0] + 0.075 * (yrange[1] - yrange[0])
