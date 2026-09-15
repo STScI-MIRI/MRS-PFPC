@@ -6,12 +6,13 @@ observed with the standard 4 point dither pattern. Use calibration observations
 for flux standards and asteroids to derive the average fixed pattern correction
 for each channel and grating.
 
-For full details, see the paper: Gordon & Law 2026, AJ, 172, 204 <https://iopscience.iop.org/article/10.3847/1538-3881/ae9a99>`_.
+For full details, see the paper: `Gordon & Law 2026, AJ, 172, 204 <https://iopscience.iop.org/article/10.3847/1538-3881/ae9a99>`_.
 
 Citation
 --------
 
-Please cite `Gordon & Law 2026, AJ, 172, 204 <https://iopscience.iop.org/article/10.3847/1538-3881/ae9a99>`_.
+Please cite `Gordon & Law 2026, AJ, 172, 204 <https://iopscience.iop.org/article/10.3847/1538-3881/ae9a99>`_ 
+if you use the MRS-PFPCs in your work.
 
 Contributors
 ------------
